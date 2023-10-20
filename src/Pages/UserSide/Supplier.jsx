@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NavButton from "../../Components/NavButtons";
+import { ENDPOINT } from "../../config";
 
 const Supplier = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -22,7 +23,7 @@ const Supplier = () => {
 
             const fetchSuppliers = async () => {
                 try {
-                    const res = await fetch('/supplier'); // Corrected the URL here
+                    const res = await fetch(ENDPOINT+'/supplier'); // Corrected the URL here
                     const json = await res.json();
 
                     if (res.ok) {
@@ -49,7 +50,7 @@ const Supplier = () => {
      */
         const handleDeleteSupplier = async (id) => {
             try {
-                const response = await fetch(`/supplier/${id}`, {
+                const response = await fetch(ENDPOINT+`/supplier/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ const Supplier = () => {
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 try {
-                const response = await fetch('/supplier', {
+                const response = await fetch(ENDPOINT+'/supplier', {
                     method: 'POST',
                     headers: {
                     'Content-Type': 'application/json',

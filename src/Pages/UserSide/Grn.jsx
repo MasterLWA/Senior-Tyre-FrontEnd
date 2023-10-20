@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NavButton from "../../Components/NavButtons";
+import { ENDPOINT } from "../../config";
 
 const Grn = () => {
   const [grn, setGrn] = useState([]);
@@ -23,7 +24,7 @@ const Grn = () => {
              */
             const fetchGrn = async () => {
                 try {
-                    const res = await fetch('/grn');
+                    const res = await fetch(ENDPOINT+'/grn');
                     const json = await res.json();
 
                     if (res.ok) {
@@ -54,7 +55,7 @@ const Grn = () => {
 
         const handleDeleteGrnItem = async (id) => {
             try {
-            const response = await fetch(`/grn/${id}`, {
+            const response = await fetch(ENDPOINT+`/grn/${id}`, {
                 method: 'DELETE',
                 headers: {
                 'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const Grn = () => {
         const handleSubmit = async (e) => {
             e.preventDefault();
             try {
-            const response = await fetch('/grn', {
+            const response = await fetch(ENDPOINT+'/grn', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',

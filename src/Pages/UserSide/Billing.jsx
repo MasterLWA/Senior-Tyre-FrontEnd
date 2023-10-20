@@ -3,6 +3,7 @@ import NavButton from "../../Components/NavButtons";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import axios from "axios";
+import { ENDPOINT } from "../../config";
 
 const Billing = () => {
   const [invoiceItems, setInvoiceItems] = useState([]);
@@ -17,7 +18,7 @@ const Billing = () => {
     useEffect(() => {
         const fetchGrn = async () => {
         try {
-            const res = await fetch("/grn");
+            const res = await fetch(ENDPOINT+"/grn");
             if (res.ok) {
             const data = await res.json();
             setGrn(data);
@@ -191,7 +192,7 @@ const Billing = () => {
 
     async function updateGRNItemQuantity(itemId, updatedQuantity) {
         try {
-        const response = await axios.patch(`/grn/${itemId}`, { Quantity: updatedQuantity }, {
+        const response = await axios.patch(ENDPOINT+`/grn/${itemId}`, { Quantity: updatedQuantity }, {
             headers: {
             'Content-Type': 'application/json',
             },
