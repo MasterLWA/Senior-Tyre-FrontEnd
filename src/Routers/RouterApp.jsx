@@ -9,6 +9,7 @@ import Editsupplier from '../Pages/UserSide/Editsupplier';
 import Editgrn from '../Pages/UserSide/Editgrn';
 import Mrn from '../Pages/UserSide/Mrn';
 import Supplier from '../Pages/UserSide/Supplier';
+import SubGRN from '../Pages/UserSide/SubGRN';
 
 const RouterApp = () => {
   return (
@@ -25,6 +26,7 @@ const RouterApp = () => {
         <Route path="/mrn" element={<Mrn />} />
         <Route path="/suppliers" element={<Supplier />} />
         <Route path="/suppliers/:id" element={<Editsupplier />} />
+        <Route path="/subgrn" element={<SubGRN />} />
       </Routes>
     </BrowserRouter>
   );

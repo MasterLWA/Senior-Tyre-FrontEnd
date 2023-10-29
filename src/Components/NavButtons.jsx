@@ -22,6 +22,11 @@ function NavButton() {
           GRN
         </Nav.Link>
       </Nav.Item>
+      <Nav.Item>
+        <Nav.Link href="/subgrn" active={location.pathname === '/subgrn'}>
+          Shop GRN
+        </Nav.Link>
+      </Nav.Item>
     </Nav>
   );
 }
