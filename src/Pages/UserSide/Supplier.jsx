@@ -3,6 +3,7 @@ import NavButton from "../../Components/NavButtons";
 import { ENDPOINT } from "../../config";
 
 const Supplier = () => {
+    
   const [suppliers, setSuppliers] = useState([]);
   const [newSupplier, setNewSupplier] = useState({
     companyName: "",

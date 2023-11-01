@@ -120,8 +120,8 @@ const Billing = () => {
      * @returns {void}
      */
     const applyDiscount = () => {
-        const discountAmount = (discountPercentage / 100) * totalAmount;
-        const discountedTotalAmount = totalAmount - discountAmount;
+       // const discountAmount = (discountPercentage / 100) * totalAmount;
+        const discountedTotalAmount = totalAmount - discountPercentage;
 
         // Update the total amount with the discount applied
         setTotalAmount(discountedTotalAmount);
@@ -147,9 +147,8 @@ const Billing = () => {
         ]);
       
         // Calculate the total amount after applying the discount
-        const discount = discountPercentage / 100;
-        const discountAmount = totalAmount * discount;
-        const discountedTotalAmount = totalAmount - discountAmount;
+        const discount = discountPercentage;
+        const discountedTotalAmount = totalAmount - discount;
       
         // Set the content of the invoice PDF
         doc.text("Invoice", 10, 10);
@@ -161,7 +160,7 @@ const Billing = () => {
       
         // Add the total amount and discount to the PDF
         doc.text(`Total Amount: Rs.${totalAmount}`, 10, doc.autoTable.previous.finalY + 10);
-        doc.text(`Discount (${discountPercentage}%): Rs.${discountAmount}`, 10, doc.autoTable.previous.finalY + 20);
+        doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
         doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 30);
       
         // Save the PDF
@@ -207,6 +206,7 @@ const Billing = () => {
         console.error(`Error updating GRN item ${itemId} quantity:`, error.message);
         }
     }
+    
 
   return (
     <div className="w-100">
@@ -299,7 +299,7 @@ const Billing = () => {
               {/* input to add discount */}
               <div className="form-group">
                 <label htmlFor="discount" className="label mt-2">
-                  Discount (%)
+                  Add Discount
                 </label>
                 <input
                   type="number"

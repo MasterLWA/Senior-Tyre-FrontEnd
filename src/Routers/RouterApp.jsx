@@ -10,6 +10,7 @@ import Editgrn from '../Pages/UserSide/Editgrn';
 import Mrn from '../Pages/UserSide/Mrn';
 import Supplier from '../Pages/UserSide/Supplier';
 import SubGRN from '../Pages/UserSide/SubGRN';
+import EditSubGRN from '../Pages/UserSide/EditSubGRN';
 
 const RouterApp = () => {
   return (
@@ -22,11 +23,13 @@ const RouterApp = () => {
         <Route path="/dashboard" element={<Dashbord />} />
         <Route path="/billing" element={<Billing />} />
         <Route path="/grn" element={<Grn />} />
-        <Route path="/editgrn/:id" element={<Editgrn />} />
+        <Route path="/grn/:id" element={<Editgrn />} />
         <Route path="/mrn" element={<Mrn />} />
         <Route path="/suppliers" element={<Supplier />} />
         <Route path="/suppliers/:id" element={<Editsupplier />} />
+        <Route path="/subgrn/:id" element={<EditSubGRN />} />
         <Route path="/subgrn" element={<SubGRN />} />
+
       </Routes>
     </BrowserRouter>
   );
