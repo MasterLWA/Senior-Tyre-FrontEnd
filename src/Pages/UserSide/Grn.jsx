@@ -353,7 +353,7 @@ const Grn = () => {
                   </button>
                 </td>
                 <td>
-                  <Link to={`/grnQuantity/${grnItem._id}`}>
+                  <Link to={`/qtygrn/${grnItem._id}`}>
                     <button className="btn btn-primary">Change Quantity</button>
                   </Link>
                 </td>
