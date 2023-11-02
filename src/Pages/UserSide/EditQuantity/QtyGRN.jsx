@@ -58,7 +58,8 @@ const QtyGRN = () => {
 
         if (response.ok) {
           alert("GRN quantity updated successfully");
-          // You can navigate to another page or refresh the page as needed
+          // refresh the page
+          window.location.reload();
         } else {
           console.error("Failed to update GRN quantity with status:", response.status);
           alert("Failed to update GRN quantity! Refresh the page and try again.");
@@ -125,6 +126,7 @@ const QtyGRN = () => {
               value="remove"
               checked={grnItem.addRemove === "remove"}
               onChange={handleChange}
+              required
             />
             <label className="form-check-label" htmlFor="remove">
               Remove

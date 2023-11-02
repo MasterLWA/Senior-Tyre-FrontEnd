@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import NavButton from "../../Components/NavButtons"
 import { ENDPOINT } from "../../config"
 import React, { useState, useEffect } from "react";
@@ -51,7 +52,7 @@ const SubGRN = () => {
                             <th>Whole Sell Price</th>
                             <th>Selling Price</th>
                             <th>Quantities in WareHouse</th>
-                            <th>Quantities in Shop</th>
+                            <th>Shop Quantities</th>
                             <th>Add Quantities to Shop</th>
                             {/* <th>Update Quantities</th>
                             <th>Add</th>
@@ -69,9 +70,10 @@ const SubGRN = () => {
                                 <td>{grnItem.WholeSellPrice}</td>
                                 <td>{grnItem.SellingPrice}</td>
                                 <td>{grnItem.Quantity}</td>
-                                <td>{grnItem.subGRNQuntity}</td>
-                                <td><button className="btn btn-success"
-                                >Add or Remove</button></td>
+                                <td>{grnItem.subGRNQuantity}</td>
+                                <td>
+                                    <Link to={`/qtysubgrn/${grnItem._id}`} className="btn btn-primary">Add Quantities to Shop</Link>
+                                </td>
                                 {/* <th><input type="number" value={QuantitiestoShop} onChange={(e) => setQuantitiestoShop(e.target.value)}
                                 ></input></th>
                                 <td><button className="btn btn-success"
