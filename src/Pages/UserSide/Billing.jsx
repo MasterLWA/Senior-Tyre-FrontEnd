@@ -44,17 +44,10 @@ const Billing = () => {
     }
   }, [selectedItem, grn]);
 
-  const updateGrnQuantity = (itemName, quantitySold) => {
-    const updatedGrn = grn.map((item) => {
-      if (item.ItemName === itemName) {
-        item.subGRNQuantity -= quantitySold;
-      }
-      return item;
-    });
-
-    setGrn(updatedGrn);
-  };
-
+  /**
+   * Adds a new item to the invoice.
+   * @returns {void}
+   */
   const addItemToInvoice = () => {
     if (selectedItem === "Select" || !selectedItemData || selectedItemData.subGRNQuantity <= 0 || PricePerItem <= 0) {
       return;
@@ -77,15 +70,32 @@ const Billing = () => {
 
     setAddedItems([...addedItems, selectedItemData.ItemName]);
 
-    const updatedSubGRNQuantity = selectedItemData.subGRNQuantity - quantity;
-    updateGrnQuantity(selectedItemData.ItemName, quantity);
-
     setSelectedItem("Select");
     setQuantity(1);
     setPricePerItem(0);
     setDiscountPercentage(0);
   };
 
+  const updateGRNItemQuantity = async (itemId, updatedQuantity) => {
+    try {
+      const response = await axios.patch(`${ENDPOINT}/grn/${itemId}`, {
+        subGRNQuantity: updatedQuantity,
+      });
+
+      if (response.status === 200) {
+        console.log(`GRN item ${itemId} quantity updated successfully`);
+      } else {
+        console.error(`Failed to update GRN item ${itemId} quantity with status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`Error updating GRN item ${itemId} quantity:`, error.message);
+    }
+  };
+
+  /**
+   * Removes an item from the invoice and updates the total amount and added items.
+   * @param {number} indexToRemove - The index of the item to remove from the invoice.
+   */
   const removeItemFromInvoice = (indexToRemove) => {
     const removedItem = invoiceItems[indexToRemove];
     const newTotalAmount = totalAmount - removedItem.Amount;
@@ -98,15 +108,15 @@ const Billing = () => {
     setAddedItems(addedItems.filter((item) => item !== removedItem.Item));
   };
 
-  const applyDiscount = () => {
-    const discountedTotalAmount = totalAmount - discountPercentage;
-    setTotalAmount(discountedTotalAmount);
-  };
-
-  const generateInvoice = () => {
+  /**
+   * Generates an invoice in PDF format and updates the subGRNQuantity of the corresponding GRN items.
+   * @function
+   * @returns {void}
+   */
+  const generateInvoice = async () => {
     const doc = new jsPDF();
 
-    const columns = ["Item", "Quantity","Supplier", "Price", "Amount"];
+    const columns = ["Item", "Quantity", "Supplier", "Price", "Amount"];
     const rows = invoiceItems.map((item) => [
       item.Item,
       item.Quantity,
@@ -130,15 +140,18 @@ const Billing = () => {
     doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
     doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 30);
 
-    doc.save("invoice.pdf");
-
-    invoiceItems.forEach((invoiceItem) => {
+    // Iterate over invoice items to update the GRN quantity in the database
+    for (const invoiceItem of invoiceItems) {
       const grnItem = grn.find((item) => item.ItemName === invoiceItem.Item);
       if (grnItem) {
         const updatedSubGRNQuantity = grnItem.subGRNQuantity - invoiceItem.Quantity;
-        updateGrnQuantity(grnItem.ItemName, updatedSubGRNQuantity);
+
+        // Call the updateGRNItemQuantity function to update the database
+        await updateGRNItemQuantity(grnItem._id, updatedSubGRNQuantity);
       }
-    });
+    }
+
+    doc.save("invoice.pdf");
 
     alert("Invoice generated successfully!");
 
@@ -148,8 +161,7 @@ const Billing = () => {
     setAddedItems([]);
   };
 
-
-
+  // Return from here
   return (
     <div className="w-100">
       <NavButton />
@@ -157,6 +169,7 @@ const Billing = () => {
       <h1 className="text-center">Billing</h1>
 
       <div className="row d-flex justify-content-center">
+        {/* add item to invoice */}
         <div className="col-md-4 border border-dark rounded bg-white m-1 d-inline-block p-5">
           <form className="m-2" onSubmit={(e) => e.preventDefault()}>
             <div className="form-group">
@@ -172,10 +185,27 @@ const Billing = () => {
                 <option value="Select">Select</option>
                 {grn.map((item) => (
                   <option key={item._id} value={item.ItemName}>
-                    {item.ItemName} - Price: {item.Price} - subGRNQuantity: {item.subGRNQuantity}
+                    {item.ItemName} - Price: {item.SellingPrice} - subGRNQuantity: {item.subGRNQuantity}
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Show Prices of Selected Item */}
+            <div className="container">
+              {selectedItemData && (
+                <div className="row">
+                  <div className="col-md-6">
+                    <h5>MinSellPrice: {selectedItemData.MinSellPrice}</h5>
+                    <h5>WholeSellPrice: {selectedItemData.WholeSellPrice}</h5>
+                    <h5>SellingPrice: {selectedItemData.SellingPrice}</h5>
+                  </div>
+                  <div className="col-md-6">
+                    <h5>Quantity: {selectedItemData.Quantity}</h5>
+                    <h5>subGRNQuantity: {selectedItemData.subGRNQuantity}</h5>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -188,9 +218,9 @@ const Billing = () => {
                 id="PricePerItem"
                 placeholder="Price per Item"
                 value={PricePerItem}
-                onChange={(e) => setPricePerItem(parseFloat(e.target.value))} />
+                onChange={(e) => setPricePerItem(parseFloat(e.target.value))}
+              />
             </div>
-
 
             <div className="form-group">
               <label htmlFor="quantity" className="label mt-2">
@@ -202,8 +232,8 @@ const Billing = () => {
                 id="quantity"
                 placeholder="Quantity"
                 value={quantity}
-                onChange={(e) => setQuantity(parseInt(e.target.value))
-              } />
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
+              />
             </div>
 
             <button
@@ -217,6 +247,7 @@ const Billing = () => {
           </form>
         </div>
 
+        {/* generate invoice */}
         <div className="col-md-7 border border-primary rounded bg-white m-1 p-5 shadow">
           <h3 className="text-center mt-2">Invoice</h3>
           <table className="table table-striped table-hover table-bordered mt-3">
@@ -239,10 +270,7 @@ const Billing = () => {
                   <td>{item.Price}</td>
                   <td>{item.Amount}</td>
                   <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => removeItemFromInvoice(index)}
-                    >
+                    <button className="btn btn-danger" onClick={() => removeItemFromInvoice(index)}>
                       Delete
                     </button>
                   </td>
@@ -264,8 +292,6 @@ const Billing = () => {
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
