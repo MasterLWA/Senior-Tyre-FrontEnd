@@ -5,6 +5,10 @@ import "jspdf-autotable";
 import axios from "axios";
 import { ENDPOINT } from "../../config";
 
+/**
+ * Billing component for generating invoices and updating GRN item quantities.
+ * @returns {JSX.Element} JSX element containing the Billing component.
+ */
 const Billing = () => {
   const [invoiceItems, setInvoiceItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState("Select");
@@ -35,6 +39,7 @@ const Billing = () => {
     fetchGrn();
   }, []);
 
+  // Update the selectedItemData state when the selectedItem state changes
   useEffect(() => {
     if (selectedItem !== "Select") {
       const selectedItemData = grn.find((item) => item.ItemName === selectedItem);
@@ -43,6 +48,7 @@ const Billing = () => {
       setSelectedItemData(null);
     }
   }, [selectedItem, grn]);
+
 
   /**
    * Adds a new item to the invoice.
@@ -76,6 +82,13 @@ const Billing = () => {
     setDiscountPercentage(0);
   };
 
+  
+  /**
+   * Updates the quantity of a GRN item in the database.
+   * @param {string} itemId - The ID of the GRN item to update.
+   * @param {number} updatedQuantity - The updated quantity of the GRN item.
+   * @returns {Promise<void>} - A Promise that resolves when the update is complete.
+   */
   const updateGRNItemQuantity = async (itemId, updatedQuantity) => {
     try {
       const response = await axios.patch(`${ENDPOINT}/grn/${itemId}`, {
@@ -91,6 +104,7 @@ const Billing = () => {
       console.error(`Error updating GRN item ${itemId} quantity:`, error.message);
     }
   };
+
 
   /**
    * Removes an item from the invoice and updates the total amount and added items.
@@ -161,6 +175,13 @@ const Billing = () => {
     setAddedItems([]);
   };
 
+
+
+
+
+
+  
+
   // Return from here
   return (
     <div className="w-100">
@@ -185,7 +206,7 @@ const Billing = () => {
                 <option value="Select">Select</option>
                 {grn.map((item) => (
                   <option key={item._id} value={item.ItemName}>
-                    {item.ItemName} - Price: {item.SellingPrice} - subGRNQuantity: {item.subGRNQuantity}
+                    {item.ItemName}
                   </option>
                 ))}
               </select>
@@ -194,32 +215,28 @@ const Billing = () => {
             {/* Show Prices of Selected Item */}
             <div className="container">
               {selectedItemData && (
-                <div className="row">
-                  <div className="col-md-6">
-                    <h5>MinSellPrice: {selectedItemData.MinSellPrice}</h5>
-                    <h5>WholeSellPrice: {selectedItemData.WholeSellPrice}</h5>
-                    <h5>SellingPrice: {selectedItemData.SellingPrice}</h5>
+                  <div className="mt-3 mb-3 border border-dark rounded bg-light p-3">
+                    <h5>MinSellPrice:<span className="text-danger text font-weight-bold">Rs.{selectedItemData.MinSellPrice}</span> </h5>
+                    <h5>WholeSellPrice:<span className="text-danger text font-weight-bold"> Rs.{selectedItemData.WholeSellPrice}</span></h5>
+                    <h5>SellingPrice: <span className="text-danger text font-weight-bold">Rs.{selectedItemData.SellingPrice}</span></h5>
+                    <h5>Warehouse Quantity: {selectedItemData.Quantity}</h5>
+                    <h5>shop Quantity: {selectedItemData.subGRNQuantity}</h5>
                   </div>
-                  <div className="col-md-6">
-                    <h5>Quantity: {selectedItemData.Quantity}</h5>
-                    <h5>subGRNQuantity: {selectedItemData.subGRNQuantity}</h5>
-                  </div>
-                </div>
               )}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="PricePerItem" className="label mt-2">
-                Price per Item
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="PricePerItem"
-                placeholder="Price per Item"
-                value={PricePerItem}
-                onChange={(e) => setPricePerItem(parseFloat(e.target.value))}
-              />
+                <div className="form-group">
+                  <label htmlFor="PricePerItem" className="label mt-2">
+                    Price per Item
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="PricePerItem"
+                    placeholder="Price per Item"
+                    value={PricePerItem}
+                    onChange={(e) => setPricePerItem(parseFloat(e.target.value))}
+                  />
             </div>
 
             <div className="form-group">
