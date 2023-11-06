@@ -159,10 +159,12 @@ const Billing = () => {
 
 
     // add text as Invoice in left side after above details
-    doc.text("Invoice", 40, 30);
-
+    doc.setFontSize(11);
+    doc.text("Invoice", 20, 30);
+    
     // add date in right side after above details
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 40, 35);
+    doc.setFontSize(8);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 35);
 
 
 
@@ -172,7 +174,7 @@ const Billing = () => {
       startY: 40,
     });
 
-    doc.text(`Total Amount: Rs.${totalAmount}`, 10, doc.autoTable.previous.finalY + 10);
+    doc.text(`Total Amount: Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 10);
     // doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
     // doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 20);
 
