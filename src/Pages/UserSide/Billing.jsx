@@ -15,7 +15,7 @@ const Billing = () => {
   const [quantity, setQuantity] = useState(1);
   const [totalAmount, setTotalAmount] = useState(0);
   const [grn, setGrn] = useState([]);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
+ // const [discountPercentage, setDiscountPercentage] = useState(0);
   const [addedItems, setAddedItems] = useState([]);
   const [PricePerItem, setPricePerItem] = useState(0);
   const [selectedItemData, setSelectedItemData] = useState(null);
@@ -79,7 +79,7 @@ const Billing = () => {
     setSelectedItem("Select");
     setQuantity(1);
     setPricePerItem(0);
-    setDiscountPercentage(0);
+   // setDiscountPercentage(0);
   };
 
   
@@ -130,29 +130,51 @@ const Billing = () => {
   const generateInvoice = async () => {
     const doc = new jsPDF();
 
-    const columns = ["Item", "Quantity", "Supplier", "Price", "Amount"];
+    const columns = ["Item", "Quantity", "Price", "Amount"];
     const rows = invoiceItems.map((item) => [
       item.Item,
       item.Quantity,
-      item.Supplier,
       item.Price,
       item.Amount,
     ]);
 
-    const discount = discountPercentage;
-    const discountedTotalAmount = totalAmount - discount;
+    // const discount = discountPercentage;
+    // const discountedTotalAmount = totalAmount - discount;
 
-    doc.text("Invoice", 10, 10);
+    // add company time in Center with bold and large font
+    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd",`${doc.internal.pageSize.getWidth() / 2}`, 10, "center");
+    doc.setFontSize(12);
+
+    // add company address in Center
+    doc.text("No. 114, Ebilipitya Road, Sooriyawewa",`${doc.internal.pageSize.getWidth() / 2}`, 15, "center");
+    doc.setFontSize(8);
+
+    // add company contact number in Center
+    doc.text("Contact No: 0472289700",`${doc.internal.pageSize.getWidth() / 2}`, 20, "center");
+    doc.setFontSize(8);
+
+    // add company email in Center
+    doc.text("seniortyrecompany20@gmail.com",`${doc.internal.pageSize.getWidth() / 2}`, 25, "center");
+    doc.setFontSize(8);
+
+
+    // add text as Invoice in left side after above details
+    doc.text("Invoice", 40, 30);
+
+    // add date in right side after above details
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 40, 35);
+
+
 
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 20,
+      startY: 40,
     });
 
     doc.text(`Total Amount: Rs.${totalAmount}`, 10, doc.autoTable.previous.finalY + 10);
-    doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
-    doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 30);
+    // doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
+    // doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 20);
 
     // Iterate over invoice items to update the GRN quantity in the database
     for (const invoiceItem of invoiceItems) {
@@ -171,7 +193,7 @@ const Billing = () => {
 
     setInvoiceItems([]);
     setTotalAmount(0);
-    setDiscountPercentage(0);
+   // setDiscountPercentage(0);
     setAddedItems([]);
   };
 
@@ -216,6 +238,7 @@ const Billing = () => {
             <div className="container">
               {selectedItemData && (
                   <div className="mt-3 mb-3 border border-dark rounded bg-light p-3">
+                    <h5>Cost Price:<span className="text-danger text font-weight-bold">Rs.{selectedItemData.CostPrice}</span> </h5>
                     <h5>MinSellPrice:<span className="text-danger text font-weight-bold">Rs.{selectedItemData.MinSellPrice}</span> </h5>
                     <h5>WholeSellPrice:<span className="text-danger text font-weight-bold"> Rs.{selectedItemData.WholeSellPrice}</span></h5>
                     <h5>SellingPrice: <span className="text-danger text font-weight-bold">Rs.{selectedItemData.SellingPrice}</span></h5>
