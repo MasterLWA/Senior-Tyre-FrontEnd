@@ -20,6 +20,13 @@ const Billing = () => {
   const [PricePerItem, setPricePerItem] = useState(0);
   const [selectedItemData, setSelectedItemData] = useState(null);
 
+
+  //addtional 
+  const[serviceCharge, setServiceCharge] = useState(0);
+  const[customerName, setCustomerName] = useState("");
+  const[Checkedby, setCheckedby] = useState("");
+
+
   // Fetch /grn data on component mount
   useEffect(() => {
     const fetchGrn = async () => {
@@ -158,25 +165,41 @@ const Billing = () => {
     doc.setFontSize(8);
 
 
+
     // add text as Invoice in left side after above details
     doc.setFontSize(11);
     doc.text("Invoice", 20, 30);
     
     // add date in right side after above details
     doc.setFontSize(8);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 35);
+    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 35);
 
+    // add customer name in right side after above details
+    doc.setFontSize(8);
+    doc.text(`Customer Name : ${customerName}`, 20, 40);
 
+    // add checked by in right side after above details
+    doc.setFontSize(8);
+    doc.text(`Checked by  : ${Checkedby}`, 20, 45);
 
-    doc.autoTable({
+    // add table with invoice items
+      doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: 50,
     });
 
-    doc.text(`Total Amount: Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 10);
+    doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 4);
+    doc.text(`Service Charge                     : Rs.${serviceCharge}`, 25, doc.autoTable.previous.finalY + 8);
+    doc.text(`Total Amount (after service charge): Rs.${totalAmount+serviceCharge}`, 25, doc.autoTable.previous.finalY + 12);
     // doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
     // doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 20);
+
+    // add space to add signature of customer left side and signature of company right side
+    doc.text("................................", 100, doc.autoTable.previous.finalY + 28);
+    doc.text("................................", 150, doc.autoTable.previous.finalY + 28);
+    doc.text("Customer Signature", 100, doc.autoTable.previous.finalY + 32);
+    doc.text("Company Signature", 150, doc.autoTable.previous.finalY + 32);
 
     // Iterate over invoice items to update the GRN quantity in the database
     for (const invoiceItem of invoiceItems) {
@@ -189,7 +212,8 @@ const Billing = () => {
       }
     }
 
-    doc.save("invoice.pdf");
+    // Save the PDF with date and customer name
+    doc.save(`Invoice_${new Date().toLocaleDateString()}_${customerName}.pdf`);
 
     alert("Invoice generated successfully!");
 
@@ -287,6 +311,58 @@ const Billing = () => {
               Add Item
             </button>
           </form>
+
+          <form onSubmit={(e) => e.preventDefault()} className="mt-5 border border-dark rounded bg-light p-3">
+                <div className="form-group">
+
+                  <label htmlFor="serviceCharge" className="label mt-2">
+                      Service Charge
+                  </label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="serviceCharge"
+                    placeholder="Service Charge"
+                    value={serviceCharge}
+                    onChange={(e) => setServiceCharge(parseInt(e.target.value))}
+                  />
+
+                </div>
+
+
+                <div className="form-group">
+                      
+                    <label htmlFor="customerName" className="label mt-2">
+                        Customer Name
+                    </label>
+  
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="customerName"
+                      placeholder="Customer Name"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                    />
+          
+                  </div>
+
+
+                  <div className="form-group">  
+                      <label htmlFor="Checkedby" className="label mt-2">
+                          Checked by
+                      </label>
+
+                      <input type="text" className="form-control" id="Checkedby" placeholder="Checked by" value={Checkedby} onChange={(e) => setCheckedby(e.target.value)} />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary mt-2"
+                  >  Additonal Details </button>
+          
+          </form>
         </div>
 
         {/* generate invoice */}
@@ -326,7 +402,7 @@ const Billing = () => {
               <div className="card bg-primary text white m-2">
                 <div className="card-body">
                   <h3 className="card-title">Total Amount</h3>
-                  <h5 className="card-text">Rs.{totalAmount}</h5>
+                  <h5 className="card-text">Rs.{totalAmount+serviceCharge}</h5>
                   <button className="btn btn-light" onClick={generateInvoice}>
                     Generate Invoice
                   </button>
