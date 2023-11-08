@@ -172,15 +172,15 @@ const Billing = () => {
     
     // add date in right side after above details
     doc.setFontSize(8);
-    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 35);
+    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 34);
 
     // add customer name in right side after above details
     doc.setFontSize(8);
-    doc.text(`Customer Name : ${customerName}`, 20, 40);
+    doc.text(`Customer Name : ${customerName}`, 20, 38);
 
     // add checked by in right side after above details
     doc.setFontSize(8);
-    doc.text(`Checked by  : ${Checkedby}`, 20, 45);
+    doc.text(`Checked by  : ${Checkedby}`, 20, 42);
 
     // add table with invoice items
       doc.autoTable({
@@ -189,9 +189,9 @@ const Billing = () => {
       startY: 50,
     });
 
-    doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 4);
-    doc.text(`Service Charge                     : Rs.${serviceCharge}`, 25, doc.autoTable.previous.finalY + 8);
-    doc.text(`Total Amount (after service charge): Rs.${totalAmount+serviceCharge}`, 25, doc.autoTable.previous.finalY + 12);
+    doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 6);
+    doc.text(`Service Charge                     : Rs.${serviceCharge}`, 25, doc.autoTable.previous.finalY + 10);
+    doc.text(`Total Amount (after service charge): Rs.${totalAmount+serviceCharge}`, 25, doc.autoTable.previous.finalY + 14);
     // doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
     // doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 20);
 
@@ -314,6 +314,8 @@ const Billing = () => {
 
           <form onSubmit={(e) => e.preventDefault()} className="mt-5 border border-dark rounded bg-light p-3">
                 <div className="form-group">
+
+                  <h5 className="text-center">Additonal Details</h5>
 
                   <label htmlFor="serviceCharge" className="label mt-2">
                       Service Charge
