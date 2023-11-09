@@ -186,7 +186,7 @@ const Supplier = () => {
                     <th>Address</th>
                     <th>Phone</th>
                     <th>Email</th>
-                    <th>Update</th>
+                    {/* <th>Update</th> */}
                     <th>Delete</th>
                     </tr>
                 </thead>
@@ -199,9 +199,9 @@ const Supplier = () => {
                         <td>{supplier.companyAddress}</td>
                         <td>{supplier.companyPhone}</td>
                         <td>{supplier.companyEmail}</td>
-                        <td>
+                        {/* <td>
                         <button className="btn btn-primary">Update</button>
-                        </td>
+                        </td> */}
                         <td>
                         <button className="btn btn-danger" onClick={() => handleDeleteSupplier(supplier._id)}>Delete</button>
                         </td>
