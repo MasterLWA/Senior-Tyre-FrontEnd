@@ -25,6 +25,7 @@ const Billing = () => {
   const[serviceCharge, setServiceCharge] = useState(0);
   const[customerName, setCustomerName] = useState("");
   const[Checkedby, setCheckedby] = useState("");
+  const[Remarks, setRemarks] = useState("");
 
 
   // Fetch /grn data on component mount
@@ -149,49 +150,50 @@ const Billing = () => {
     // const discountedTotalAmount = totalAmount - discount;
 
     // add company time in Center with bold and large font
-    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd",`${doc.internal.pageSize.getWidth() / 2}`, 10, "center");
+    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd",`${doc.internal.pageSize.getWidth() / 2}`, 20, "center");
     doc.setFontSize(12);
 
     // add company address in Center
-    doc.text("No. 114, Ebilipitya Road, Sooriyawewa",`${doc.internal.pageSize.getWidth() / 2}`, 15, "center");
+    doc.text("No. 114, Ebilipitya Road, Sooriyawewa",`${doc.internal.pageSize.getWidth() / 2}`, 25, "center");
     doc.setFontSize(8);
 
     // add company contact number in Center
-    doc.text("Contact No: 0472289700",`${doc.internal.pageSize.getWidth() / 2}`, 20, "center");
+    doc.text("Contact No: 0472289700/0472288204",`${doc.internal.pageSize.getWidth() / 2}`, 30, "center");
     doc.setFontSize(8);
 
     // add company email in Center
-    doc.text("seniortyrecompany20@gmail.com",`${doc.internal.pageSize.getWidth() / 2}`, 25, "center");
+    doc.text("seniortyrecompany20@gmail.com",`${doc.internal.pageSize.getWidth() / 2}`, 35, "center");
     doc.setFontSize(8);
 
 
 
     // add text as Invoice in left side after above details
     doc.setFontSize(11);
-    doc.text("Invoice", 20, 30);
+    doc.text("Invoice", 20, 40);
     
     // add date in right side after above details
     doc.setFontSize(8);
-    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 34);
+    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 44);
 
     // add customer name in right side after above details
     doc.setFontSize(8);
-    doc.text(`Customer Name : ${customerName}`, 20, 38);
+    doc.text(`Customer Name : ${customerName}`, 20, 48);
 
     // add checked by in right side after above details
     doc.setFontSize(8);
-    doc.text(`Checked by  : ${Checkedby}`, 20, 42);
+    doc.text(`Checked by  : ${Checkedby}`, 20, 52);
 
     // add table with invoice items
       doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 50,
+      startY: 56,
     });
 
     doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 6);
     doc.text(`Service Charge                     : Rs.${serviceCharge}`, 25, doc.autoTable.previous.finalY + 10);
     doc.text(`Total Amount (after service charge): Rs.${totalAmount+serviceCharge}`, 25, doc.autoTable.previous.finalY + 14);
+    doc.text(`Remarks                           : ${Remarks}`, 25, doc.autoTable.previous.finalY + 18);
     // doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
     // doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 20);
 
@@ -349,6 +351,18 @@ const Billing = () => {
                     />
           
                   </div>
+
+                  <label htmlFor="Remarks" className="label mt-2">
+                      Remarks
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="Remarks"
+                    placeholder="Remarks"
+                    value={Remarks}
+                    onChange={(e) => setRemarks(e.target.value)}
+                  />
 
 
                   <div className="form-group">  
