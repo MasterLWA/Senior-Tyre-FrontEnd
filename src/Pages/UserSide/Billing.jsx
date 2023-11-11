@@ -199,7 +199,7 @@ const Billing = () => {
 
     // add space to add signature of customer left side and signature of company right side
     doc.text("................................", 100, doc.autoTable.previous.finalY + 28);
-    doc.text("................................", 150, doc.autoTable.previous.finalY + 28);
+    doc.text("................................ ", 150, doc.autoTable.previous.finalY + 28);
     doc.text("Customer Signature", 100, doc.autoTable.previous.finalY + 32);
     doc.text("Company Signature", 150, doc.autoTable.previous.finalY + 32);
 
