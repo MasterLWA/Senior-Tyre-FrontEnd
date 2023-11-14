@@ -1,6 +1,5 @@
 import React,{useState,useEffect} from "react";
-import NavButton from "../../Components/NavButtons";
-import { ENDPOINT } from "../../config";
+import { ENDPOINT } from "../config";
 
 
 const StockBalanceTable = () => {

@@ -1,4 +1,4 @@
-import NavButton from "../Components/NavButtons";
+import StockBalanceTable  from "./StockBalanceTable";
 
 const Dashbord = () => {
     return (   
@@ -6,6 +6,7 @@ const Dashbord = () => {
             <div className="container">
                 dashboard
             </div>
+            <StockBalanceTable />
         </div>
     );
 
