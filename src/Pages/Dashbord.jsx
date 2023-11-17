@@ -1,11 +1,13 @@
-import NavButton from "../Components/NavButtons";
+import StockBalanceTable  from "../Components/StockBalanceTable";
+import DashboardNavbar from "../Components/DashboardNavbar";
 
 const Dashbord = () => {
     return (   
         <div>
-            <div className="container">
-                dashboard
-            </div>
+        <DashboardNavbar/>
+        <div className="container">
+            <StockBalanceTable/>
+        </div>
         </div>
     );
 
