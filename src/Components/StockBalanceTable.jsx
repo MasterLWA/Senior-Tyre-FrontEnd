@@ -28,7 +28,7 @@ const StockBalanceTable = () => {
         <div>
    
             <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-fit">
-                <h1 className="text-center mb-3">Shop GRN Table</h1>
+                <h1 className="text-center mb-3"> GRN Analysis Table</h1>
 
                 <table className="table table-striped table-hover table-bordered">
                     <thead>
