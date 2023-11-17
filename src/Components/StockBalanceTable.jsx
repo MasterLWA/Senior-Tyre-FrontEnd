@@ -27,7 +27,7 @@ const StockBalanceTable = () => {
     return (
         <div>
    
-            <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
+            <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-fit">
                 <h1 className="text-center mb-3">Shop GRN Table</h1>
 
                 <table className="table table-striped table-hover table-bordered">
@@ -40,6 +40,10 @@ const StockBalanceTable = () => {
                             <th>Selling Price</th>
                             <th>Quantities in Warehouse</th>
                             <th>Shop Quantities</th>
+                            <th>Asstimated Minimum Profit</th>
+                            <th>Asstimated Maximum Profit</th>
+
+
                         </tr>
                     </thead>
 
@@ -48,11 +52,13 @@ const StockBalanceTable = () => {
                             <tr key={grnItem._id}>
                                 <td>{grnItem.ItemName}</td>
                                 <td>{grnItem.SupplierName}</td>
-                                <td>{grnItem.MinSellPrice}</td>
-                                <td>{grnItem.WholeSellPrice}</td>
-                                <td>{grnItem.SellingPrice}</td>
+                                <td>Rs.{grnItem.MinSellPrice}</td>
+                                <td>Rs.{grnItem.WholeSellPrice}</td>
+                                <td>Rs.{grnItem.SellingPrice}</td>
                                 <td className={grnItem.Quantity > 0 ? 'bg-success text-white' : 'bg-danger text-white'}>{grnItem.Quantity} </td>
                                 <td className={grnItem.subGRNQuantity > 0 ? 'bg-success text-white' : 'bg-danger text-white'}>{grnItem.subGRNQuantity} </td>
+                                <td>Rs.{grnItem.MinSellPrice - grnItem.CostPrice}</td>
+                                <td>Rs.{grnItem.WholeSellPrice - grnItem.CostPrice}</td>
                             </tr>
                         ))}
                     </tbody>
