@@ -15,6 +15,22 @@ const ProfitAnalysis = () => {
 
                 <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
 
+                    <form>
+                        <div className="row">
+                            <div className="col">
+                                <label for="fromDate">From</label>
+                                <input type="date" className="form-control" id="fromDate" placeholder="From" />
+                            </div>
+                            <div className="col">
+                                <label for="toDate">To</label>
+                                <input type="date" className="form-control" id="toDate" placeholder="To" />
+                            </div>
+                        </div>
+                        <div>
+                                <button type="submit" className="btn btn-primary mt-3">Apply</button>
+                        </div>
+                    </form>
+
                 </div>
 
             </div>
