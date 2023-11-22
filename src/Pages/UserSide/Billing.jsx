@@ -4,6 +4,7 @@ import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import axios from "axios";
 import { ENDPOINT } from "../../config";
+import Select from 'react-select';
 
 /**
  * Billing component for generating invoices and updating GRN item quantities.
@@ -243,23 +244,19 @@ const Billing = () => {
         {/* add item to invoice */}
         <div className="col-md-4 border border-dark rounded bg-white m-1 d-inline-block p-5">
           <form className="m-2" onSubmit={(e) => e.preventDefault()}>
+
             <div className="form-group">
               <label htmlFor="item" className="label mt-3">
                 Item
               </label>
-              <select
-                className="form-control"
-                id="item"
-                value={selectedItem}
-                onChange={(e) => setSelectedItem(e.target.value)}
-              >
-                <option value="Select">Select</option>
-                {grn.map((item) => (
-                  <option key={item._id} value={item.ItemName}>
-                    {item.ItemName}
-                  </option>
-                ))}
-              </select>
+              <Select
+                  className="form-control"
+                  id="item"
+                  value={{ label: selectedItem, value: selectedItem }}
+                  onChange={(selectedOption) => setSelectedItem(selectedOption.value)}
+                  options={grn.map((item) => ({ label: item.ItemName, value: item.ItemName }))}
+                  isSearchable
+                />
             </div>
 
             {/* Show Prices of Selected Item */}
