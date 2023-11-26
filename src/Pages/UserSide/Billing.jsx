@@ -11,25 +11,22 @@ import Select from 'react-select';
  * @returns {JSX.Element} JSX element containing the Billing component.
  */
 const Billing = () => {
+
+  
   const [invoiceItems, setInvoiceItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState("Select");
   const [quantity, setQuantity] = useState(1);
   const [totalAmount, setTotalAmount] = useState(0);
   const [grn, setGrn] = useState([]);
- // const [discountPercentage, setDiscountPercentage] = useState(0);
   const [addedItems, setAddedItems] = useState([]);
   const [PricePerItem, setPricePerItem] = useState(0);
   const [selectedItemData, setSelectedItemData] = useState(null);
 
+  const [serviceCharge, setServiceCharge] = useState(0);
+  const [customerName, setCustomerName] = useState("");
+  const [Checkedby, setCheckedby] = useState("");
+  const [Remarks, setRemarks] = useState("");
 
-  //addtional 
-  const[serviceCharge, setServiceCharge] = useState(0);
-  const[customerName, setCustomerName] = useState("");
-  const[Checkedby, setCheckedby] = useState("");
-  const[Remarks, setRemarks] = useState("");
-
-
-  // Fetch /grn data on component mount
   useEffect(() => {
     const fetchGrn = async () => {
       try {
@@ -48,7 +45,6 @@ const Billing = () => {
     fetchGrn();
   }, []);
 
-  // Update the selectedItemData state when the selectedItem state changes
   useEffect(() => {
     if (selectedItem !== "Select") {
       const selectedItemData = grn.find((item) => item.ItemName === selectedItem);
@@ -58,11 +54,6 @@ const Billing = () => {
     }
   }, [selectedItem, grn]);
 
-
-  /**
-   * Adds a new item to the invoice.
-   * @returns {void}
-   */
   const addItemToInvoice = () => {
     if (selectedItem === "Select" || !selectedItemData || selectedItemData.subGRNQuantity <= 0 || PricePerItem <= 0) {
       return;
@@ -88,16 +79,8 @@ const Billing = () => {
     setSelectedItem("Select");
     setQuantity(1);
     setPricePerItem(0);
-   // setDiscountPercentage(0);
   };
 
-  
-  /**
-   * Updates the quantity of a GRN item in the database.
-   * @param {string} itemId - The ID of the GRN item to update.
-   * @param {number} updatedQuantity - The updated quantity of the GRN item.
-   * @returns {Promise<void>} - A Promise that resolves when the update is complete.
-   */
   const updateGRNItemQuantity = async (itemId, updatedQuantity) => {
     try {
       const response = await axios.patch(`${ENDPOINT}/grn/${itemId}`, {
@@ -114,11 +97,6 @@ const Billing = () => {
     }
   };
 
-
-  /**
-   * Removes an item from the invoice and updates the total amount and added items.
-   * @param {number} indexToRemove - The index of the item to remove from the invoice.
-   */
   const removeItemFromInvoice = (indexToRemove) => {
     const removedItem = invoiceItems[indexToRemove];
     const newTotalAmount = totalAmount - removedItem.Amount;
@@ -131,14 +109,21 @@ const Billing = () => {
     setAddedItems(addedItems.filter((item) => item !== removedItem.Item));
   };
 
-  /**
-   * Generates an invoice in PDF format and updates the subGRNQuantity of the corresponding GRN items.
-   * @function
-   * @returns {void}
-   */
+  const addSellItems = async (sellItems) => {
+    try {
+      const response = await axios.post(`${ENDPOINT}/sell`, sellItems);
+      if (response.status === 200) {
+        console.log("Sell items added successfully");
+      } else {
+        console.error(`Failed to add sell items with status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error adding sell items:", error.message);
+    }
+  };
+
   const generateInvoice = async () => {
     const doc = new jsPDF();
-
     const columns = ["Item", "Quantity", "Price", "Amount"];
     const rows = invoiceItems.map((item) => [
       item.Item,
@@ -147,45 +132,31 @@ const Billing = () => {
       item.Amount,
     ]);
 
-    // const discount = discountPercentage;
-    // const discountedTotalAmount = totalAmount - discount;
-
-    // add company time in Center with bold and large font
-    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd",`${doc.internal.pageSize.getWidth() / 2}`, 20, "center");
+    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd", `${doc.internal.pageSize.getWidth() / 2}`, 20, "center");
     doc.setFontSize(12);
 
-    // add company address in Center
-    doc.text("No. 114, Ebilipitya Road, Sooriyawewa",`${doc.internal.pageSize.getWidth() / 2}`, 25, "center");
+    doc.text("No. 114, Ebilipitya Road, Sooriyawewa", `${doc.internal.pageSize.getWidth() / 2}`, 25, "center");
     doc.setFontSize(8);
 
-    // add company contact number in Center
-    doc.text("Contact No: 0472289700/0472288204",`${doc.internal.pageSize.getWidth() / 2}`, 30, "center");
+    doc.text("Contact No: 0472289700/0472288204", `${doc.internal.pageSize.getWidth() / 2}`, 30, "center");
     doc.setFontSize(8);
 
-    // add company email in Center
-    doc.text("seniortyrecompany20@gmail.com",`${doc.internal.pageSize.getWidth() / 2}`, 35, "center");
+    doc.text("seniortyrecompany20@gmail.com", `${doc.internal.pageSize.getWidth() / 2}`, 35, "center");
     doc.setFontSize(8);
 
-
-
-    // add text as Invoice in left side after above details
     doc.setFontSize(11);
     doc.text("Invoice", 20, 40);
-    
-    // add date in right side after above details
+
     doc.setFontSize(8);
     doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 44);
 
-    // add customer name in right side after above details
     doc.setFontSize(8);
     doc.text(`Customer Name : ${customerName}`, 20, 48);
 
-    // add checked by in right side after above details
     doc.setFontSize(8);
     doc.text(`Checked by  : ${Checkedby}`, 20, 52);
 
-    // add table with invoice items
-      doc.autoTable({
+    doc.autoTable({
       head: [columns],
       body: rows,
       startY: 56,
@@ -193,45 +164,59 @@ const Billing = () => {
 
     doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 6);
     doc.text(`Service Charge                     : Rs.${serviceCharge}`, 25, doc.autoTable.previous.finalY + 10);
-    doc.text(`Total Amount (after service charge): Rs.${totalAmount+serviceCharge}`, 25, doc.autoTable.previous.finalY + 14);
+    doc.text(`Total Amount (after service charge): Rs.${totalAmount + serviceCharge}`, 25, doc.autoTable.previous.finalY + 14);
     doc.text(`Remarks                           : ${Remarks}`, 25, doc.autoTable.previous.finalY + 18);
-    // doc.text(`Discount: Rs.${discountPercentage}`, 10, doc.autoTable.previous.finalY + 20);
-    // doc.text(`Total Amount (after discount): Rs.${discountedTotalAmount}`, 10, doc.autoTable.previous.finalY + 20);
 
-    // add space to add signature of customer left side and signature of company right side
     doc.text("................................", 100, doc.autoTable.previous.finalY + 28);
     doc.text("................................ ", 150, doc.autoTable.previous.finalY + 28);
     doc.text("Customer Signature", 100, doc.autoTable.previous.finalY + 32);
     doc.text("Company Signature", 150, doc.autoTable.previous.finalY + 32);
 
-    // Iterate over invoice items to update the GRN quantity in the database
+    const sellItems = [];
+
     for (const invoiceItem of invoiceItems) {
       const grnItem = grn.find((item) => item.ItemName === invoiceItem.Item);
       if (grnItem) {
         const updatedSubGRNQuantity = grnItem.subGRNQuantity - invoiceItem.Quantity;
-
-        // Call the updateGRNItemQuantity function to update the database
         await updateGRNItemQuantity(grnItem._id, updatedSubGRNQuantity);
+
+        const sellItem = {
+          item: invoiceItem.Item,
+          unitCostPrice: grnItem.CostPrice,
+          unitSellingPrice: invoiceItem.Price,
+          totalSellingItems: invoiceItem.Quantity,
+          totalSellingPrice: invoiceItem.Amount,
+          profit: invoiceItem.Amount - (grnItem.CostPrice * invoiceItem.Quantity),
+        };
+
+        sellItems.push(sellItem);
       }
     }
 
-    // Save the PDF with date and customer name
+    if (serviceCharge > 0) {
+      const serviceChargeItem = {
+        item: "Service Charge",
+        unitCostPrice: 0,
+        unitSellingPrice: serviceCharge,
+        totalSellingItems: 1,
+        totalSellingPrice: serviceCharge,
+        profit: serviceCharge,
+      };
+
+      sellItems.push(serviceChargeItem);
+    }
+
+    await addSellItems(sellItems);
+
     doc.save(`Invoice_${new Date().toLocaleDateString()}_${customerName}.pdf`);
 
     alert("Invoice generated successfully!");
 
     setInvoiceItems([]);
     setTotalAmount(0);
-   // setDiscountPercentage(0);
     setAddedItems([]);
   };
 
-
-
-
-
-
-  
 
   // Return from here
   return (

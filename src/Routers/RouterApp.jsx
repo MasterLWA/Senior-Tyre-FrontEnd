@@ -5,12 +5,10 @@ import Login from '../Pages/Loging'; // Corrected the import statement
 import Dashbord from '../Pages/Dashbord';
 import Billing from '../Pages/UserSide/Billing';
 import Grn from '../Pages/UserSide/Grn';
-import Editsupplier from '../Pages/UserSide/Editsupplier';
 import Editgrn from '../Pages/UserSide/Editgrn';
 import Mrn from '../Pages/UserSide/Mrn';
 import Supplier from '../Pages/UserSide/Supplier';
 import SubGRN from '../Pages/UserSide/SubGRN';
-import EditSubGRN from '../Pages/UserSide/EditSubGRN';
 
 import QtySubGRN from '../Pages/UserSide/EditQuantity/QtySubGRN';
 import QtyGRN from '../Pages/UserSide/EditQuantity/QtyGRN';
@@ -30,8 +28,6 @@ const RouterApp = () => {
         <Route path="/grn/:id" element={<Editgrn />} />
         <Route path="/mrn" element={<Mrn />} />
         <Route path="/suppliers" element={<Supplier />} />
-        <Route path="/suppliers/:id" element={<Editsupplier />} />
-        <Route path="/subgrn/:id" element={<EditSubGRN />} />
         <Route path="/subgrn" element={<SubGRN />} />
 
         <Route path='/qtygrn/:id' element={<QtyGRN />} />
