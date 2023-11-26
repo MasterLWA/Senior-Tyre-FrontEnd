@@ -11,6 +11,8 @@ const QtySubGRN = () => {
     subGRNQuantity: 0, // SubGRN quantity
   });
 
+  const [selectedOperation, setSelectedOperation] = useState("add");
+
   useEffect(() => {
     const fetchGrnItem = async () => {
       try {
@@ -39,19 +41,20 @@ const QtySubGRN = () => {
       let updatedQuantity = grnItem.Quantity;
       let updatedSubGRNQuantity = grnItem.subGRNQuantity;
 
-      const selectedOperation = e.target.addRemove.value;
-
-      if (selectedOperation === "add") {
-        // Add to the Shop: Plus entered value to subGRNQuantity and minus it from Quantity
-        updatedSubGRNQuantity += quantityChange;
-        updatedQuantity -= quantityChange;
-      } else if (selectedOperation === "return") {
-        // Return to the Warehouse: Minus entered value from subGRNQuantity and plus it to Quantity
-        updatedSubGRNQuantity -= quantityChange;
-        updatedQuantity += quantityChange;
-      } else if (selectedOperation === "remove") {
-        // Remove from subGRNQuantity: Minus entered value from subGRNQuantity
-        updatedSubGRNQuantity -= quantityChange;
+      switch (selectedOperation) {
+        case "add":
+          updatedSubGRNQuantity += quantityChange;
+          updatedQuantity -= quantityChange;
+          break;
+        case "return":
+          updatedSubGRNQuantity -= quantityChange;
+          updatedQuantity += quantityChange;
+          break;
+        case "remove":
+          updatedSubGRNQuantity -= quantityChange;
+          break;
+        default:
+          break;
       }
 
       const updatedGrnItem = {
@@ -71,7 +74,6 @@ const QtySubGRN = () => {
 
         if (response.ok) {
           alert("GRN subGRNQuantity updated successfully");
-          // Refresh the page as needed
           window.location.reload();
         } else {
           console.error("Failed to update GRN subGRNQuantity with status:", response.status);
@@ -91,9 +93,15 @@ const QtySubGRN = () => {
       <div className="form container m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
         <h1 className="text-center mb-3">Change GRN subGRNQuantity</h1>
         <form onSubmit={handleSubmit}>
-          <h4>Balance Shop Quantities of: <span className="text-danger">{grnItem.ItemName}</span></h4>
-          <h5>Current Stock in the Warehouse is: <span className="text-success">{grnItem.Quantity}</span></h5>
-          <h5>Current Stock in the Shop is: <span className="text-success">{grnItem.subGRNQuantity}</span></h5>
+          <h4>
+            Balance Shop Quantities of: <span className="text-danger">{grnItem.ItemName}</span>
+          </h4>
+          <h5>
+            Current Stock in the Warehouse is: <span className="text-success">{grnItem.Quantity}</span>
+          </h5>
+          <h5>
+            Current Stock in the Shop is: <span className="text-success">{grnItem.subGRNQuantity}</span>
+          </h5>
           <hr />
 
           <label htmlFor="QuantityChange">Change Item Quantity</label>
@@ -107,47 +115,25 @@ const QtySubGRN = () => {
           />
           <br />
 
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="addRemove"
-              id="add"
-              value="add"
-              required
-            />
-            <label className="form-check-label" htmlFor="add">
-              Add to the Shop
-            </label>
-          </div>
-
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="addRemove"
-              id="return"
-              value="return"
-              required
-            />
-            <label className="form-check-label" htmlFor="return">
-              Return to Warehouse
-            </label>
-          </div>
-
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="addRemove"
-              id="remove"
-              value="remove"
-              required
-            />
-            <label className="form-check-label" htmlFor="remove">
-              Remove from subGRNQuantity
-            </label>
-          </div>
+          {["add", "return", "remove"].map((operation) => (
+            <div className="form-check" key={operation}>
+              <input
+                className="form-check-input"
+                type="radio"
+                name="addRemove"
+                id={operation}
+                value={operation}
+                checked={selectedOperation === operation}
+                onChange={() => setSelectedOperation(operation)}
+                required
+              />
+              <label className="form-check-label" htmlFor={operation}>
+                {operation === "add" && "Add to the Shop"}
+                {operation === "return" && "Return to Warehouse"}
+                {operation === "remove" && "Remove from subGRNQuantity"}
+              </label>
+            </div>
+          ))}
 
           <input type="submit" value="Save" className="btn btn-primary mt-3" />
         </form>
