@@ -1,42 +1,166 @@
+import React, { useState } from "react";
 import DashboardNavbar from "../Components/DashboardNavbar";
-
-
-// This Page filter transactions by date and show profit and loss reports
-// Also Generate PDF Reports and Excel Reports
+import axios from "axios";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import { saveAs } from "file-saver";
+import ExcelJS from "exceljs";
+import { ENDPOINT } from "../config";
 
 const ProfitAnalysis = () => {
-    return (
-        <div>
-            <DashboardNavbar />
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
-            <div className="container">
-                <h1 className="text-center mb-3 mt-3">
-                    Profit Analysis</h1>
+  // generatePDFReport function
+  const generatePDFReport = async () => {
+    try {
+      const response = await axios.get(`${ENDPOINT}/getbytime/${fromDate}/${toDate}`);
+      const data = response.data;
 
-                <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
+      const doc = new jsPDF();
+      doc.text(`Profit Analysis Report (${fromDate} to ${toDate})`, 15, 15);
+      doc.setTextColor(0, 0, 255); // Set text color to blue
 
-                    <form>
-                        <div className="row">
-                            <div className="col">
-                                <label for="fromDate">From</label>
-                                <input type="date" className="form-control" id="fromDate" placeholder="From" />
-                            </div>
-                            <div className="col">
-                                <label for="toDate">To</label>
-                                <input type="date" className="form-control" id="toDate" placeholder="To" />
-                            </div>
-                        </div>
-                        <div>
-                                <button type="submit" className="btn btn-primary mt-3">Apply</button>
-                        </div>
-                    </form>
+      const tableData = data.map(item => [
+        item.item,
+        item.unitCostPrice,
+        item.unitSellingPrice,
+        item.totalSellingItems,
+        item.totalSellingPrice,
+        item.profit,
+        item.day,
+      ]);
 
-                </div>
+      doc.autoTable({
+        head: [['Item', 'Unit Cost Price', 'Unit Selling Price', 'Total Selling Items', 'Total Selling Price', 'Profit', 'Day']],
+        body: tableData,
+        startY: 25,
+        theme: 'striped', // Add striped background to the table
+        styles: { textColor: [0, 0, 0], fontStyle: 'bold', fillColor: [200, 220, 255] }, // Set text color to black, make text bold, and set background color
+      });
 
+      const totalProfit = data.reduce((total, item) => total + item.profit, 0);
+      const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
+
+      const earnings = totalProfit - totalCost;
+      const loss = totalCost - totalProfit;
+
+      doc.text(`Total Profit: Rs.${totalProfit}`, 15, doc.autoTable.previous.finalY + 10);
+      doc.text(`Total Cost: Rs.${totalCost}`, 15, doc.autoTable.previous.finalY + 15);
+      doc.text(`Earnings: Rs.${earnings}`, 15, doc.autoTable.previous.finalY + 20);
+      doc.text(`Loss: Rs.${loss}`, 15, doc.autoTable.previous.finalY + 25);
+
+      doc.save(`Profit_Analysis_Report_${fromDate}_${toDate}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF report:", error.message);
+    }
+  };
+
+
+// generateExcelReport function
+  const generateExcelReport = async () => {
+    try {
+      const response = await axios.get(`${ENDPOINT}/getbytime/${fromDate}/${toDate}`);
+      const data = response.data;
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Profit Analysis Report");
+
+      // Add header row
+      worksheet.addRow(['Item', 'Unit Cost Price', 'Unit Selling Price', 'Total Selling Items', 'Total Selling Price', 'Profit', 'Day']);
+
+      // Add data rows
+      data.forEach(item => {
+        worksheet.addRow([item.item, item.unitCostPrice, item.unitSellingPrice, item.totalSellingItems, item.totalSellingPrice, item.profit, item.day]);
+      });
+
+      // Calculate totalProfit and totalCost
+      const totalProfit = data.reduce((total, item) => total + item.profit, 0);
+      const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
+
+      const earnings = totalProfit - totalCost;
+      const loss = totalCost - totalProfit;
+
+      // Add totalProfit and totalCost to worksheet
+      worksheet.addRow([]);
+      worksheet.addRow(['Total Profit', totalProfit]);
+      worksheet.addRow(['Total Cost', totalCost]);
+      worksheet.addRow(['Earnings', earnings]);
+      worksheet.addRow(['Loss', loss]);
+
+      // Generate buffer and save
+      const excelBuffer = await workbook.xlsx.writeBuffer();
+      saveAs(
+        new Blob([excelBuffer], { type: "application/octet-stream" }),
+        `Profit_Analysis_Report_${fromDate}_${toDate}.xlsx`
+      );
+    } catch (error) {
+      console.error("Error generating Excel report:", error.message);
+    }
+  };
+
+  return (
+    <div>
+      <DashboardNavbar />
+
+      <div className="container">
+        <h1 className="text-center mb-3 mt-3">Profit Analysis</h1>
+
+        <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
+          <form>
+            <div className="row">
+              <div className="col">
+                <label htmlFor="fromDate">From</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  id="fromDate"
+                  placeholder="From"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+              <div className="col">
+                <label htmlFor="toDate">To</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  id="toDate"
+                  placeholder="To"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
             </div>
 
+            <div className="row mt-3">
+              <div className="col">
+                <button
+                  type="button"
+                  className="btn btn-primary mt-3"
+                  onClick={generatePDFReport}
+                  disabled={!fromDate || !toDate}
+                >
+                  Generate PDF
+                </button>
+              </div>
+              <div className="col">
+                <button
+                  type="button"
+                  className="btn btn-success mt-3"
+                  onClick={generateExcelReport}
+                  disabled={!fromDate || !toDate}
+                >
+                  Generate Excel
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
+
 
 export default ProfitAnalysis;
