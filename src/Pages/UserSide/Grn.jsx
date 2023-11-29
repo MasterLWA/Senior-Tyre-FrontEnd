@@ -23,6 +23,7 @@ const Grn = () => {
     SupplierName: "", // Updated field name to match the select element
     PaymentMethod: "", // Updated field name to match the select element
     ValueRemarks: "",
+    subGRNQuantity:0,
   });
 
   const [suppliers, setSuppliers] = useState([]);
@@ -110,6 +111,7 @@ const Grn = () => {
           WholeSellPrice: "",
           SellingPrice: "",
           SupplierName: "",
+          subsubGRNQuantity:0,
           PaymentMethod: "",
           ValueRemarks: "",
         });

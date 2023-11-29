@@ -7,10 +7,11 @@ const QtySubGRN = () => {
   const { id } = useParams();
   const [grnItem, setGrnItem] = useState({
     ItemName: "",
-    Quantity: 0, // Current quantity
-    subGRNQuantity: 0, // SubGRN quantity
+    Quantity: 0,
+    subGRNQuantity: 0,
   });
 
+  const [quantityChange, setQuantityChange] = useState(0);
   const [selectedOperation, setSelectedOperation] = useState("add");
 
   useEffect(() => {
@@ -32,14 +33,20 @@ const QtySubGRN = () => {
     fetchGrnItem();
   }, [id]);
 
+  const handleQuantityChange = (e) => {
+    setQuantityChange(parseInt(e.target.value));
+  };
+
+  const handleOperationChange = (operation) => {
+    setSelectedOperation(operation);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const quantityChange = parseInt(e.target.QuantityChange.value);
-
     if (quantityChange !== 0) {
-      let updatedQuantity = grnItem.Quantity;
       let updatedSubGRNQuantity = grnItem.subGRNQuantity;
+      let updatedQuantity = grnItem.Quantity;
 
       switch (selectedOperation) {
         case "add":
@@ -111,6 +118,8 @@ const QtySubGRN = () => {
             className="mt-1 form-control mx-auto"
             name="QuantityChange"
             id="QuantityChange"
+            value={quantityChange}
+            onChange={handleQuantityChange}
             required
           />
           <br />
@@ -124,7 +133,7 @@ const QtySubGRN = () => {
                 id={operation}
                 value={operation}
                 checked={selectedOperation === operation}
-                onChange={() => setSelectedOperation(operation)}
+                onChange={() => handleOperationChange(operation)}
                 required
               />
               <label className="form-check-label" htmlFor={operation}>
