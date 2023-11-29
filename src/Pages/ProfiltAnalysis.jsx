@@ -39,16 +39,31 @@ const ProfitAnalysis = () => {
         styles: { textColor: [0, 0, 0], fontStyle: 'bold', fillColor: [200, 220, 255] }, // Set text color to black, make text bold, and set background color
       });
 
-      const totalProfit = data.reduce((total, item) => total + item.profit, 0);
+      const totalIncome = data.reduce((total, item) => total + item.totalSellingPrice, 0);
+      const profit = data.reduce((total, item) => total + item.profit, 0);
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
 
-      const earnings = totalProfit - totalCost;
-      const loss = totalCost - totalProfit;
+      
+      doc.text(`Total Income: Rs.${totalIncome}`, 15, doc.autoTable.previous.finalY + 15);
+      doc.text(`Total Cost: Rs.${totalCost}`, 15, doc.autoTable.previous.finalY + 23);
+      doc.text(`Total Profit: Rs.${profit}`, 15, doc.autoTable.previous.finalY + 30); 
 
-      doc.text(`Total Profit: Rs.${totalProfit}`, 15, doc.autoTable.previous.finalY + 10);
-      doc.text(`Total Cost: Rs.${totalCost}`, 15, doc.autoTable.previous.finalY + 15);
-      doc.text(`Earnings: Rs.${earnings}`, 15, doc.autoTable.previous.finalY + 20);
-      doc.text(`Loss: Rs.${loss}`, 15, doc.autoTable.previous.finalY + 25);
+
+      // bottom of the page, center  shows powered by Lakindu
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(
+        "Powered by LWA Technologies",
+        doc.internal.pageSize.getWidth() / 2,
+        doc.internal.pageSize.getHeight() - 10,
+        { align: "center" }
+      );
+
+      
+
+
+      // doc.text(`Earnings: Rs.${earnings}`, 15, doc.autoTable.previous.finalY + 20);
+      // doc.text(`Loss: Rs.${loss}`, 15, doc.autoTable.previous.finalY + 25);
 
       doc.save(`Profit_Analysis_Report_${fromDate}_${toDate}.pdf`);
     } catch (error) {
@@ -74,19 +89,21 @@ const ProfitAnalysis = () => {
         worksheet.addRow([item.item, item.unitCostPrice, item.unitSellingPrice, item.totalSellingItems, item.totalSellingPrice, item.profit, item.day]);
       });
 
-      // Calculate totalProfit and totalCost
-      const totalProfit = data.reduce((total, item) => total + item.profit, 0);
+      const totalIncome = data.reduce((total, item) => total + item.totalSellingPrice, 0);
+      const profit = data.reduce((total, item) => total + item.profit, 0);
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
+      const totalSellingItems = data.reduce((total, item) => total + item.totalSellingItems, 0);
+  
 
-      const earnings = totalProfit - totalCost;
-      const loss = totalCost - totalProfit;
 
       // Add totalProfit and totalCost to worksheet
       worksheet.addRow([]);
-      worksheet.addRow(['Total Profit', totalProfit]);
+      worksheet.addRow(['Total Income', totalIncome]);
       worksheet.addRow(['Total Cost', totalCost]);
-      worksheet.addRow(['Earnings', earnings]);
-      worksheet.addRow(['Loss', loss]);
+      worksheet.addRow(['Total Profit', profit]);
+      worksheet.addRow(['Total Selling Items', totalSellingItems]);
+
+
 
       // Generate buffer and save
       const excelBuffer = await workbook.xlsx.writeBuffer();
