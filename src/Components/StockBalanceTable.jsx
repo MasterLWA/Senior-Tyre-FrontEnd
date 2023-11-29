@@ -57,8 +57,8 @@ const StockBalanceTable = () => {
                                 <td>Rs.{grnItem.SellingPrice}</td>
                                 <td className={grnItem.Quantity > 0 ? 'bg-success text-white' : 'bg-danger text-white'}>{grnItem.Quantity} </td>
                                 <td className={grnItem.subGRNQuantity > 0 ? 'bg-success text-white' : 'bg-danger text-white'}>{grnItem.subGRNQuantity} </td>
-                                <td>Rs.{grnItem.MinSellPrice - grnItem.CostPrice}</td>
-                                <td>Rs.{grnItem.WholeSellPrice - grnItem.CostPrice}</td>
+                                <td>Rs.{grnItem.MinSellPrice * grnItem.CostPrice}</td>
+                                <td>Rs.{grnItem.WholeSellPrice * grnItem.CostPrice}</td>
                             </tr>
                         ))}
                     </tbody>
