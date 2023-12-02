@@ -171,10 +171,18 @@ const Billing = () => {
     doc.text(`Total Amount (after service charge): Rs.${totalAmount + serviceCharge}`, 25, doc.autoTable.previous.finalY + 14);
     doc.text(`Remarks                           : ${Remarks}`, 25, doc.autoTable.previous.finalY + 18);
 
-    doc.text("................................", 100, doc.autoTable.previous.finalY + 28);
-    doc.text("................................ ", 150, doc.autoTable.previous.finalY + 28);
-    doc.text("Customer Signature", 100, doc.autoTable.previous.finalY + 32);
-    doc.text("Company Signature", 150, doc.autoTable.previous.finalY + 32);
+    doc.text("................................", 100, doc.autoTable.previous.finalY + 27);
+    doc.text("................................ ", 150, doc.autoTable.previous.finalY + 27);
+    doc.text("Customer Signature", 100, doc.autoTable.previous.finalY + 31);
+    doc.text("Company Signature", 150, doc.autoTable.previous.finalY + 31);
+
+    // bottom of the page, center  shows powered by Lakindu after signature
+    doc.setFontSize(6);
+    doc.setTextColor(100);
+    doc.text('Powered by LWA Technologies', doc.internal.pageSize.getWidth() / 2, doc.autoTable.previous.finalY + 38, { align: 'center' });
+    doc.setFontSize(5);
+    doc.setTextColor(100);
+    doc.text('lakinduw.me', doc.internal.pageSize.getWidth() / 2, doc.autoTable.previous.finalY + 41, { align: 'center' });
 
     const sellItems = [];
 
