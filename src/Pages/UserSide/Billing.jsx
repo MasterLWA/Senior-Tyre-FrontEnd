@@ -147,19 +147,23 @@ const Billing = () => {
     doc.setFontSize(11);
     doc.text("Invoice", 20, 40);
 
+    //invoice no is the current time and date with milliseconds and first 3 letters of the customer name
     doc.setFontSize(8);
-    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 44);
+    doc.text(`Invoice No : ${customerName.substring(0, 3)}${new Date().getTime()}`, 20, 44);
 
     doc.setFontSize(8);
-    doc.text(`Customer Name : ${customerName}`, 20, 48);
+    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 48);
 
     doc.setFontSize(8);
-    doc.text(`Checked by  : ${Checkedby}`, 20, 52);
+    doc.text(`Customer Name : ${customerName}`, 20, 52);
+
+    doc.setFontSize(8);
+    doc.text(`Checked by  : ${Checkedby}`, 20, 56);
 
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 56,
+      startY: 60,
     });
 
     doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 6);
