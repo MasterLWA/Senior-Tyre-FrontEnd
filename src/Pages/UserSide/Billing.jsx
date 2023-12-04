@@ -26,6 +26,7 @@ const Billing = () => {
   const [customerName, setCustomerName] = useState("");
   const [Checkedby, setCheckedby] = useState("");
   const [Remarks, setRemarks] = useState("");
+  const [InvoiceNum, setInvoiceNum] = useState("");
 
   useEffect(() => {
     const fetchGrn = async () => {
@@ -149,7 +150,7 @@ const Billing = () => {
 
     //invoice no is the current time and date with milliseconds and first 3 letters of the customer name
     doc.setFontSize(8);
-    doc.text(`Invoice No : ${customerName.substring(0, 3)}${new Date().getTime()}`, 20, 44);
+    doc.text(`Invoice No : ${InvoiceNum}`, 20, 44);
 
     doc.setFontSize(8);
     doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 48);
@@ -365,6 +366,14 @@ const Billing = () => {
                       </label>
 
                       <input type="text" className="form-control" id="Checkedby" placeholder="Checked by" value={Checkedby} onChange={(e) => setCheckedby(e.target.value)} />
+                  </div>
+
+
+                  <div className="form-group">
+                      <label htmlFor="InvoiceNum" className="label mt-2">
+                          Invoice Number
+                      </label>
+                      <input type="text" className="form-control" id="InvoiceNum" placeholder="Invoice Number" onChange={(e) => setInvoiceNum(e.target.value)} />
                   </div>
 
                   <button
