@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import NavButton from "../../Components/NavButtons";
 import { ENDPOINT } from "../../config";
 import React, { useState, useEffect } from "react";
+import Select from 'react-select';
+
 
 const SubGRN = () => {
     const [grn, setGrn] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchGrn = async () => {
@@ -29,9 +32,33 @@ const SubGRN = () => {
     return (
         <div>
             <NavButton />
-            <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
+            <div className="container text-center m-2 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
                 <h1 className="text-center mb-3">Shop GRN Table</h1>
+                
+                    {/* Search grn and visit it */}
+                    <div className="row d-flex justify-content-center align-items-center m-1 p-4">
 
+                        <div className="col-md-8 text-start">
+                            <Select
+                                options={grn}
+                                getOptionLabel={(option) => option.ItemName}
+                                getOptionValue={(option) => option._id}
+                                onChange={(option) => {
+                                    setSearchTerm(option._id);
+                                }}
+                                placeholder="Search an item"
+                            />
+                        </div>
+
+                        <div className="col-md-4 text-start m-1">
+                            <Link to={`/qtysubgrn/${searchTerm}`} className="btn btn-primary w-100">
+                                View Item
+                            </Link>
+                        </div>
+                    </div>
+                
+
+                {/* GRN Table */}
                 <table className="table table-striped table-hover table-bordered">
                     <thead>
                         <tr>
