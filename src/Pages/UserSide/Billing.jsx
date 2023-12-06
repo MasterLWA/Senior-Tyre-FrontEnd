@@ -167,21 +167,23 @@ const Billing = () => {
       startY: 60,
     });
 
-    doc.text(`Total Amount                       : Rs.${totalAmount}`, 25, doc.autoTable.previous.finalY + 6);
-    doc.text(`Service Charge                     : Rs.${serviceCharge}`, 25, doc.autoTable.previous.finalY + 10);
-    doc.text(`Total Amount (after service charge): Rs.${totalAmount + serviceCharge}`, 25, doc.autoTable.previous.finalY + 14);
-    doc.text(`Remarks                           : ${Remarks}`, 25, doc.autoTable.previous.finalY + 18);
+    doc.setFontSize(10);
+    doc.text(`Total Amount                        : Rs.${totalAmount}`, 95, doc.autoTable.previous.finalY + 6);
+    doc.text(`Service Charge                      : Rs.${serviceCharge}`, 95, doc.autoTable.previous.finalY + 12);
+    doc.text(`Total Amount (after service charge) : Rs.${totalAmount + serviceCharge}`, 95, doc.autoTable.previous.finalY + 16);
+    doc.text(`Remarks                             : ${Remarks}`, 95, doc.autoTable.previous.finalY + 20);
 
-    doc.text("................................", 100, doc.autoTable.previous.finalY + 27);
-    doc.text("................................ ", 150, doc.autoTable.previous.finalY + 27);
-    doc.text("Customer Signature", 100, doc.autoTable.previous.finalY + 31);
-    doc.text("Company Signature", 150, doc.autoTable.previous.finalY + 31);
+    doc.setFontSize(8);
+    doc.text("................................", 20, doc.autoTable.previous.finalY + 29);
+    doc.text("................................ ", 55, doc.autoTable.previous.finalY + 29);
+    doc.text("Customer Signature", 20, doc.autoTable.previous.finalY + 33);
+    doc.text("Company Signature", 55, doc.autoTable.previous.finalY + 33);
 
     // bottom of the page, center  shows powered by Lakindu after signature
-    doc.setFontSize(6);
+    doc.setFontSize(7);
     doc.setTextColor(100);
     doc.text('Powered by LWA Technologies', doc.internal.pageSize.getWidth() / 2, doc.autoTable.previous.finalY + 38, { align: 'center' });
-    doc.setFontSize(5);
+    doc.setFontSize(6);
     doc.setTextColor(100);
     doc.text('lakinduw.me', doc.internal.pageSize.getWidth() / 2, doc.autoTable.previous.finalY + 41, { align: 'center' });
 
