@@ -135,9 +135,13 @@ const Grn = () => {
     });
   };
 
+  /** 
+   * search grn to find the item name
+   */
   const filteredGrn = grn.filter(grnItem =>
     grnItem.ItemName.toLowerCase().includes(searchTerm.toLowerCase())
- );
+  );
+  
 
   return (
     <div>

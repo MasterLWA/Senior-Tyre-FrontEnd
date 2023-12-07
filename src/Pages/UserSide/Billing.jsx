@@ -28,75 +28,94 @@ const Billing = () => {
   const [Remarks, setRemarks] = useState("");
   const [InvoiceNum, setInvoiceNum] = useState("");
 
-  useEffect(() => {
-    const fetchGrn = async () => {
-      try {
-        const res = await fetch(ENDPOINT + "/grn");
-        if (res.ok) {
-          const data = await res.json();
-          setGrn(data);
+      useEffect(() => {
+        /**
+         * Fetches the GRN (Goods Received Note) data from the server.
+         * @returns {Promise<void>} A promise that resolves when the data is fetched successfully.
+         */
+        const fetchGrn = async () => {
+          try {
+            const res = await fetch(ENDPOINT + "/grn");
+            if (res.ok) {
+              const data = await res.json();
+              setGrn(data);
+            } else {
+              console.error("Request failed with status", res.status);
+            }
+          } catch (error) {
+            console.error("Error making GET request:", error.message);
+          }
+        };
+
+        fetchGrn();
+      }, []);
+      
+
+      useEffect(() => {
+        if (selectedItem !== "Select") {
+          const selectedItemData = grn.find((item) => item.ItemName === selectedItem);
+          setSelectedItemData(selectedItemData);
         } else {
-          console.error("Request failed with status", res.status);
+          setSelectedItemData(null);
+        }
+      }, [selectedItem, grn]);
+
+      /**
+       * Adds an item to the invoice.
+       * 
+       * @returns {void}
+       */
+      const addItemToInvoice = () => {
+        if (selectedItem === "Select" || !selectedItemData || selectedItemData.subGRNQuantity <= 0 || PricePerItem <= 0) {
+          return;
+        }
+
+        if (addedItems.includes(selectedItemData.ItemName)) {
+          return;
+        }
+
+        const newItem = {
+          Item: selectedItemData.ItemName,
+          Quantity: quantity,
+          Supplier: selectedItemData.SupplierName,
+          Price: PricePerItem,
+          Amount: quantity * PricePerItem,
+        };
+
+        setInvoiceItems([...invoiceItems, newItem]);
+        setTotalAmount(totalAmount + newItem.Amount);
+
+        setAddedItems([...addedItems, selectedItemData.ItemName]);
+
+        setSelectedItem("Select");
+        setQuantity(1);
+        setPricePerItem(0);
+      };
+
+
+    /**
+     * Updates the quantity of a GRN item.
+     * @param {string} itemId - The ID of the GRN item.
+     * @param {number} updatedQuantity - The updated quantity of the GRN item.
+     * @returns {Promise<void>} - A promise that resolves when the quantity is updated successfully.
+     * @throws {Error} - If there is an error updating the quantity.
+     */
+    const updateGRNItemQuantity = async (itemId, updatedQuantity) => {
+      try {
+        const response = await axios.patch(`${ENDPOINT}/grn/${itemId}`, {
+          subGRNQuantity: updatedQuantity,
+        });
+
+        if (response.status === 200) {
+          console.log(`GRN item ${itemId} quantity updated successfully`);
+        } else {
+          console.error(`Failed to update GRN item ${itemId} quantity with status: ${response.status}`);
         }
       } catch (error) {
-        console.error("Error making GET request:", error.message);
+        console.error(`Error updating GRN item ${itemId} quantity:`, error.message);
+        throw error;
       }
     };
-
-    fetchGrn();
-  }, []);
-
-  useEffect(() => {
-    if (selectedItem !== "Select") {
-      const selectedItemData = grn.find((item) => item.ItemName === selectedItem);
-      setSelectedItemData(selectedItemData);
-    } else {
-      setSelectedItemData(null);
-    }
-  }, [selectedItem, grn]);
-
-  const addItemToInvoice = () => {
-    if (selectedItem === "Select" || !selectedItemData || selectedItemData.subGRNQuantity <= 0 || PricePerItem <= 0) {
-      return;
-    }
-
-    if (addedItems.includes(selectedItemData.ItemName)) {
-      return;
-    }
-
-    const newItem = {
-      Item: selectedItemData.ItemName,
-      Quantity: quantity,
-      Supplier: selectedItemData.SupplierName,
-      Price: PricePerItem,
-      Amount: quantity * PricePerItem,
-    };
-
-    setInvoiceItems([...invoiceItems, newItem]);
-    setTotalAmount(totalAmount + newItem.Amount);
-
-    setAddedItems([...addedItems, selectedItemData.ItemName]);
-
-    setSelectedItem("Select");
-    setQuantity(1);
-    setPricePerItem(0);
-  };
-
-  const updateGRNItemQuantity = async (itemId, updatedQuantity) => {
-    try {
-      const response = await axios.patch(`${ENDPOINT}/grn/${itemId}`, {
-        subGRNQuantity: updatedQuantity,
-      });
-
-      if (response.status === 200) {
-        console.log(`GRN item ${itemId} quantity updated successfully`);
-      } else {
-        console.error(`Failed to update GRN item ${itemId} quantity with status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error(`Error updating GRN item ${itemId} quantity:`, error.message);
-    }
-  };
 
   const removeItemFromInvoice = (indexToRemove) => {
     const removedItem = invoiceItems[indexToRemove];
@@ -110,6 +129,8 @@ const Billing = () => {
     setAddedItems(addedItems.filter((item) => item !== removedItem.Item));
   };
 
+
+
   const addSellItems = async (sellItems) => {
     try {
       const response = await axios.post(`${ENDPOINT}/sell`, sellItems);
@@ -122,6 +143,8 @@ const Billing = () => {
       console.error("Error adding sell items:", error.message);
     }
   };
+
+  
 
   const generateInvoice = async () => {
     const doc = new jsPDF();
@@ -150,28 +173,46 @@ const Billing = () => {
 
     //invoice no is the current time and date with milliseconds and first 3 letters of the customer name
     doc.setFontSize(8);
-    doc.text(`Invoice No : ${InvoiceNum}`, 20, 44);
+    doc.text(`Invoice No `, 20, 44);
+    doc.text(`: ${InvoiceNum}`, 45, 44);
 
     doc.setFontSize(8);
-    doc.text(`Date  : ${new Date().toLocaleDateString()}`, 20, 48);
+    doc.text(`Date` , 20, 48);
+    doc.text(`: ${new Date().toLocaleDateString()}`, 45, 48);
 
     doc.setFontSize(8);
-    doc.text(`Customer Name : ${customerName}`, 20, 52);
+    doc.text(`Customer Name`, 20, 52);
+    doc.text(`: ${customerName}`, 45, 52);
 
     doc.setFontSize(8);
-    doc.text(`Checked by  : ${Checkedby}`, 20, 56);
+    doc.text(`Checked by `, 20, 56);
+    doc.text(`: ${Checkedby}`, 45, 56);
 
     doc.autoTable({
       head: [columns],
       body: rows,
       startY: 60,
+      // make the table header transparent and cell borders black
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.1,
+      },
+      // add line breaks between rows
     });
 
     doc.setFontSize(10);
-    doc.text(`Total Amount                        : Rs.${totalAmount}`, 95, doc.autoTable.previous.finalY + 6);
-    doc.text(`Service Charge                      : Rs.${serviceCharge}`, 95, doc.autoTable.previous.finalY + 12);
-    doc.text(`Total Amount (after service charge) : Rs.${totalAmount + serviceCharge}`, 95, doc.autoTable.previous.finalY + 16);
-    doc.text(`Remarks                             : ${Remarks}`, 95, doc.autoTable.previous.finalY + 20);
+    doc.text(`Total Amount       `, 95, doc.autoTable.previous.finalY + 6);
+    doc.text(`: Rs.${totalAmount}`, 155, doc.autoTable.previous.finalY + 6);
+
+    doc.text(`Service Charge     `, 95, doc.autoTable.previous.finalY + 11);
+    doc.text(`: Rs.${serviceCharge}`, 155, doc.autoTable.previous.finalY + 11);
+
+    doc.text(`Total Amount (after service charge) `, 95, doc.autoTable.previous.finalY + 16);
+    doc.text(`: Rs.${totalAmount+serviceCharge}`, 155, doc.autoTable.previous.finalY + 16);
+
+    doc.setFontSize(8);
+    doc.text(`Remarks : ${Remarks}`, 95, doc.autoTable.previous.finalY + 23);
 
     doc.setFontSize(8);
     doc.text("................................", 20, doc.autoTable.previous.finalY + 29);
@@ -180,10 +221,10 @@ const Billing = () => {
     doc.text("Company Signature", 55, doc.autoTable.previous.finalY + 33);
 
     // bottom of the page, center  shows powered by Lakindu after signature
-    doc.setFontSize(7);
+    doc.setFontSize(8);
     doc.setTextColor(100);
     doc.text('Powered by LWA Technologies', doc.internal.pageSize.getWidth() / 2, doc.autoTable.previous.finalY + 38, { align: 'center' });
-    doc.setFontSize(6);
+    doc.setFontSize(7);
     doc.setTextColor(100);
     doc.text('lakinduw.me', doc.internal.pageSize.getWidth() / 2, doc.autoTable.previous.finalY + 41, { align: 'center' });
 
