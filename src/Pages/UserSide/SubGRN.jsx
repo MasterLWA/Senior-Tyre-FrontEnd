@@ -49,7 +49,6 @@ const SubGRN = () => {
                             className="form-control"
                         />
                     </div>
-
                 </div>
 
                 {/* GRN Table */}
