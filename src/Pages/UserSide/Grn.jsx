@@ -11,6 +11,7 @@ const Grn = () => {
 
 
   const [grn, setGrn] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [newGrnItem, setNewGrnItem] = useState({
     ItemName: "",
@@ -25,6 +26,7 @@ const Grn = () => {
     ValueRemarks: "",
     subGRNQuantity:0,
   });
+
 
   const [suppliers, setSuppliers] = useState([]);
 
@@ -132,6 +134,14 @@ const Grn = () => {
       [name]: value,
     });
   };
+
+  /** 
+   * search grn to find the item name
+   */
+  const filteredGrn = grn.filter(grnItem =>
+    grnItem.ItemName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
 
   return (
     <div>
@@ -311,6 +321,19 @@ const Grn = () => {
 
         <h1 className="text-center mb-3">GRN Table</h1>
 
+        {/* Search grn and visit it */}
+        <div className="row d-flex justify-content-center align-items-center m-1 p-4">
+          <div className="col-md-8 text-start">
+            <input
+              type="text"
+              placeholder="Enter name to search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-control"
+            />
+          </div>
+        </div>
+
         <table className="table table-striped table-hover table-bordered">
           <thead>
             <tr>
@@ -330,7 +353,7 @@ const Grn = () => {
             </tr>
           </thead>
           <tbody>
-            {grn.map((grnItem) => (
+            {filteredGrn.map((grnItem) => (
               <tr key={grnItem._id}>
                 <td>{grnItem.ItemName}</td>
                 <td>{grnItem.SupplierName}</td>
