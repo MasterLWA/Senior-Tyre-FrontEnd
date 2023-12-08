@@ -93,6 +93,7 @@ const Billing = () => {
       };
 
 
+
     /**
      * Updates the quantity of a GRN item.
      * @param {string} itemId - The ID of the GRN item.
@@ -143,6 +144,21 @@ const Billing = () => {
       console.error("Error adding sell items:", error.message);
     }
   };
+
+
+  useEffect(() => {
+    // Retrieve previous invoice number from local storage
+    const previousInvoiceNum = localStorage.getItem('InvoiceNum');
+
+    // Calculate the next invoice number
+    const nextInvoiceNum = previousInvoiceNum ? parseInt(previousInvoiceNum, 10) + 1 : 1;
+
+    // Save the next invoice number in local storage
+    localStorage.setItem('InvoiceNum', nextInvoiceNum);
+
+    // Update the state with the current invoice number
+    setInvoiceNum(nextInvoiceNum);
+  }, []);
 
   
 
@@ -247,19 +263,6 @@ const Billing = () => {
 
         sellItems.push(sellItem);
       }
-    }
-
-    if (serviceCharge > 0) {
-      const serviceChargeItem = {
-        item: "Service Charge",
-        unitCostPrice: 0,
-        unitSellingPrice: serviceCharge,
-        totalSellingItems: 1,
-        totalSellingPrice: serviceCharge,
-        profit: serviceCharge,
-      };
-
-      sellItems.push(serviceChargeItem);
     }
 
     await addSellItems(sellItems);
@@ -409,14 +412,6 @@ const Billing = () => {
                       </label>
 
                       <input type="text" className="form-control" id="Checkedby" placeholder="Checked by" value={Checkedby} onChange={(e) => setCheckedby(e.target.value)} />
-                  </div>
-
-
-                  <div className="form-group">
-                      <label htmlFor="InvoiceNum" className="label mt-2">
-                          Invoice Number
-                      </label>
-                      <input type="text" className="form-control" id="InvoiceNum" placeholder="Invoice Number" onChange={(e) => setInvoiceNum(e.target.value)} />
                   </div>
 
                   <button

@@ -44,9 +44,9 @@ const ProfitAnalysis = () => {
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
 
       
-      doc.text(`Total Income: Rs.${totalIncome}`, 15, doc.autoTable.previous.finalY + 15);
-      doc.text(`Total Cost: Rs.${totalCost}`, 15, doc.autoTable.previous.finalY + 23);
-      doc.text(`Total Profit: Rs.${profit}`, 15, doc.autoTable.previous.finalY + 30); 
+      doc.text(`Total Income      : Rs.${totalIncome}`, 15, doc.autoTable.previous.finalY + 15);
+      doc.text(`Total Cost        : Rs.${totalCost}`, 15, doc.autoTable.previous.finalY + 25);
+      doc.text(`Total Profit      : Rs.${profit}`, 15, doc.autoTable.previous.finalY + 35); 
 
 
       // bottom of the page, center  shows powered by Lakindu
