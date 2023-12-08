@@ -172,7 +172,8 @@ const Billing = () => {
       item.Amount,
     ]);
 
-    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd", `${doc.internal.pageSize.getWidth() / 2}`, 20, "center");
+    doc.setFontSize(16);
+    doc.text("Senior Tyre & Battery Trading Company (PVT) Ltd", `${doc.internal.pageSize.getWidth() / 2}`, 18, "center");
     doc.setFontSize(12);
 
     doc.text("No. 114, Ebilipitya Road, Sooriyawewa", `${doc.internal.pageSize.getWidth() / 2}`, 25, "center");
@@ -218,17 +219,19 @@ const Billing = () => {
     });
 
     doc.setFontSize(10);
-    doc.text(`Total Amount       `, 95, doc.autoTable.previous.finalY + 6);
+
+    doc.text(`Sub Total       `, 120, doc.autoTable.previous.finalY + 6);
     doc.text(`: Rs.${totalAmount}`, 155, doc.autoTable.previous.finalY + 6);
 
-    doc.text(`Service Charge     `, 95, doc.autoTable.previous.finalY + 11);
+    doc.text(`Service Charge     `, 120, doc.autoTable.previous.finalY + 11);
     doc.text(`: Rs.${serviceCharge}`, 155, doc.autoTable.previous.finalY + 11);
 
-    doc.text(`Total Amount (after service charge) `, 95, doc.autoTable.previous.finalY + 16);
+    doc.text(`Total Amount `, 120, doc.autoTable.previous.finalY + 17);
+    doc.setFontSize(12);
     doc.text(`: Rs.${totalAmount+serviceCharge}`, 155, doc.autoTable.previous.finalY + 16);
 
     doc.setFontSize(8);
-    doc.text(`Remarks : ${Remarks}`, 95, doc.autoTable.previous.finalY + 23);
+    doc.text(`Remarks : ${Remarks}`, 120, doc.autoTable.previous.finalY + 23);
 
     doc.setFontSize(8);
     doc.text("................................", 20, doc.autoTable.previous.finalY + 29);
