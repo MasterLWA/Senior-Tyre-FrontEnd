@@ -3,7 +3,7 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return(
-        <div className="footer">
+        <div className="footer mt-auto">
             <div class="text-center p-4 bg-dark text-white">
                 © {currentYear} All Rights Reserved <br />
                 Powered by

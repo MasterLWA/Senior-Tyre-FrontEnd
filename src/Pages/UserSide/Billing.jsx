@@ -28,6 +28,9 @@ const Billing = () => {
   const [Remarks, setRemarks] = useState("");
   const [InvoiceNum, setInvoiceNum] = useState("");
 
+
+  // get index 
+
       useEffect(() => {
         /**
          * Fetches the GRN (Goods Received Note) data from the server.
@@ -59,6 +62,61 @@ const Billing = () => {
           setSelectedItemData(null);
         }
       }, [selectedItem, grn]);
+
+
+ // Assuming ENDPOINT is defined somewhere before this code
+
+useEffect(() => {
+  const fetchIndex = async () => {
+    try {
+      // Use the correct endpoint format by appending a slash before "index"
+      const res = await fetch(ENDPOINT + "/index/658b1fb98822444dd9b9d167");
+      
+      // Check if the response status is in the range 200-299 for success
+      if (res.ok) {
+        const data = await res.json();
+        // Ensure that the 'indexnum' property exists in the response data
+        if (data && data.indexnum !== undefined) {
+          // Assuming setInvoiceNum is a state setter function
+          setInvoiceNum(data.indexnum);
+        } else {
+          console.error("Response data is missing the 'indexnum' property:", data);
+        }
+      } else {
+        console.error("Request failed with status", res.status);
+      }
+    } catch (error) {
+      console.error("Error making GET request:", error.message);
+    }
+  };
+
+  // Call the fetchIndex function within the useEffect
+  fetchIndex();
+}, []); // Empty dependency array to run the effect only once when the component mounts
+
+
+// update current index number after generating invoice by incrementing the index number by 1
+const updateIndex = async () => {
+  try {
+    // Use the correct endpoint format by appending a slash before "index"
+    const res = await fetch(ENDPOINT + "/index/658b1fb98822444dd9b9d167", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ indexnum: InvoiceNum + 1 }),
+    });
+    if (res.ok) {
+      console.log("Index updated successfully");
+    }
+  } catch (error) {
+    console.error("Error updating index:", error.message);
+  }
+};
+
+
+        
+
 
       /**
        * Adds an item to the invoice.
@@ -145,22 +203,6 @@ const Billing = () => {
     }
   };
 
-
-  useEffect(() => {
-    // Retrieve previous invoice number from local storage
-    const previousInvoiceNum = localStorage.getItem('InvoiceNum');
-
-    // Calculate the next invoice number
-    const nextInvoiceNum = previousInvoiceNum ? parseInt(previousInvoiceNum, 10) + 1 : 1;
-
-    // Save the next invoice number in local storage
-    localStorage.setItem('InvoiceNum', nextInvoiceNum);
-
-    // Update the state with the current invoice number
-    setInvoiceNum(nextInvoiceNum);
-  }, []);
-
-  
 
   const generateInvoice = async () => {
     const doc = new jsPDF();
@@ -277,6 +319,12 @@ const Billing = () => {
     setInvoiceItems([]);
     setTotalAmount(0);
     setAddedItems([]);
+    
+    updateIndex();
+
+
+    // reload the page after generating invoice
+    window.location.reload();
   };
 
 

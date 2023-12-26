@@ -5,14 +5,14 @@ import Header from "./Header";
 
 const Structure = () => {
     return (
-        <>
+        <div className="d-flex flex-column min-vh-100">
             <Header />
                 <div>
                     <RouterApp />
                 </div>
 
             <Footer />
-        </>
+        </div>
     );
 }
 
