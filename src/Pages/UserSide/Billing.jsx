@@ -26,7 +26,7 @@ const Billing = () => {
   const [customerName, setCustomerName] = useState("");
   const [Checkedby, setCheckedby] = useState("");
   const [Remarks, setRemarks] = useState("");
-  const [InvoiceNum, setInvoiceNum] = useState("");
+  const [InvoiceNum, setInvoiceNum] = useState("");https://github.com/MasterLWA/Senior-Tyre-FrontEnd/actions
 
 
   // get index 
@@ -307,6 +307,7 @@ const updateIndex = async () => {
         };
 
         sellItems.push(sellItem);
+        
       }
     }
 
@@ -325,6 +326,7 @@ const updateIndex = async () => {
 
     // reload the page after generating invoice
     window.location.reload();
+    setInvoiceNum(null)
   };
 
 
