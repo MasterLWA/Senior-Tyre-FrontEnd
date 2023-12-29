@@ -126,11 +126,11 @@ const stockAnalysisExcel = async () => {
     const worksheet = workbook.addWorksheet("Stock Analysis Report");
 
     // Add header row
-    worksheet.addRow(['Item', 'Ware House Quantity', 'Shop Quantity']);
+    worksheet.addRow(['Item', 'Ware House Quantity', 'Shop Quantity', 'Cost Price']);
 
     // Add data rows
     data.forEach(item => {
-      worksheet.addRow([item.ItemName, item.Quantity, item.subGRNQuantity]);
+      worksheet.addRow([item.ItemName, item.Quantity, item.subGRNQuantity, item.CostPrice]);
     });
 
     // Generate buffer and save
