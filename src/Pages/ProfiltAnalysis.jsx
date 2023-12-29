@@ -116,15 +116,47 @@ const ProfitAnalysis = () => {
     }
   };
 
+// StockAnalysisexcel function
+const stockAnalysisExcel = async () => {
+  try {
+    const response = await axios.get(`${ENDPOINT}/grn`);
+    const data = response.data;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Stock Analysis Report");
+
+    // Add header row
+    worksheet.addRow(['Item', 'Ware House Quantity', 'Shop Quantity']);
+
+    // Add data rows
+    data.forEach(item => {
+      worksheet.addRow([item.ItemName, item.Quantity, item.subGRNQuantity]);
+    });
+
+    // Generate buffer and save
+    const excelBuffer = await workbook.xlsx.writeBuffer();
+    saveAs(
+      new Blob([excelBuffer], { type: "application/octet-stream" }),
+      `Stock_Analysis_Report.xlsx`
+    );
+  } catch (error) {
+    console.error("Error generating Excel report:", error.message);
+  }
+};
+
+
   return (
     <div>
       <DashboardNavbar />
 
       <div className="container">
-        <h1 className="text-center mb-3 mt-3">Profit Analysis</h1>
+        <h1 className="text-center mb-3 mt-3">Reports</h1>
 
         <div className="container text-center m-5 p-5 border border-dark rounded bg-light shadow rounded mx-auto w-75">
           <form>
+
+            <h3 className="text-center mb-3 mt-3"
+            >Profit Analysis</h3>
             <div className="row">
               <div className="col">
                 <label htmlFor="fromDate">From</label>
@@ -171,6 +203,16 @@ const ProfitAnalysis = () => {
                   Generate Excel
                 </button>
               </div>
+            </div>
+
+            <hr />
+
+            <div className="container text-center m-5">
+              <h3 className="text-center mb-3 mt-3"
+              >Stock Analysis</h3>
+              <button type="button" className="btn btn-primary mt-3" onClick={stockAnalysisExcel}>
+                View Stock Analysis
+              </button>
             </div>
           </form>
         </div>
