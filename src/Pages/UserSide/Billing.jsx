@@ -110,6 +110,8 @@ const updateIndex = async () => {
     }
   } catch (error) {
     handleFetchError(error, action);
+  } finally {
+    window.location.reload();
   }
 };
 
