@@ -19,6 +19,12 @@ const DashboardNavbar = () => {
             </Nav.Link>
         </Nav.Item>
 
+        <Nav.Item>
+          <Nav.Link href="/transactions" active={location.pathname === '/transactions'}>
+            Transactions
+          </Nav.Link>
+        </Nav.Item>
+
         <form className="d-flex justify-content-end mr-5 pr-5">
                 <a href="/login" className="btn text-danger" type="submit">Logout</a>
         </form>

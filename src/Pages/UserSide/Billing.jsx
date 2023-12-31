@@ -64,55 +64,57 @@ const Billing = () => {
       }, [selectedItem, grn]);
 
 
- // Assuming ENDPOINT is defined somewhere before this code
+// Function to handle fetch errors
+const handleFetchError = (error, action) => {
+  console.error(`Error ${action}:`, error.message);
+};
 
+// Fetch index number when the component mounts
 useEffect(() => {
+  const action = "fetching index";
+  
   const fetchIndex = async () => {
     try {
-      // Use the correct endpoint format by appending a slash before "index"
-      const res = await fetch(ENDPOINT + "/index/658b1fb98822444dd9b9d167");
-      
-      // Check if the response status is in the range 200-299 for success
-      if (res.ok) {
-        const data = await res.json();
-        // Ensure that the 'indexnum' property exists in the response data
-        if (data && data.indexnum !== undefined) {
-          // Assuming setInvoiceNum is a state setter function
-          setInvoiceNum(data.indexnum);
-        } else {
-          console.error("Response data is missing the 'indexnum' property:", data);
-        }
+      const response = await fetch(`${ENDPOINT}/index/658b1fb98822444dd9b9d167`);
+      if (response.ok) {
+        const data = await response.json();
+        setInvoiceNum(data.indexnum);
       } else {
-        console.error("Request failed with status", res.status);
+        console.error(`Failed to fetch index. Server returned status: ${response.status}`);
       }
     } catch (error) {
-      console.error("Error making GET request:", error.message);
+      handleFetchError(error, action);
     }
   };
 
-  // Call the fetchIndex function within the useEffect
+  // Include fetchIndex in the dependency array
   fetchIndex();
+
 }, []); // Empty dependency array to run the effect only once when the component mounts
 
-
-// update current index number after generating invoice by incrementing the index number by 1
+// Update index number after generating invoice
 const updateIndex = async () => {
+  const action = "updating index";
   try {
-    // Use the correct endpoint format by appending a slash before "index"
-    const res = await fetch(ENDPOINT + "/index/658b1fb98822444dd9b9d167", {
+    const response = await fetch(`${ENDPOINT}/index/658b1fb98822444dd9b9d167`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ indexnum: InvoiceNum + 1 }),
     });
-    if (res.ok) {
+    if (response.ok) {
       console.log("Index updated successfully");
+    } else {
+      console.error(`Failed to update index. Server returned status: ${response.status}`);
     }
   } catch (error) {
-    console.error("Error updating index:", error.message);
+    handleFetchError(error, action);
+  } finally {
+    window.location.reload();
   }
 };
+
 
 
         

@@ -12,6 +12,7 @@ import SubGRN from '../Pages/UserSide/SubGRN';
 import QtySubGRN from '../Pages/UserSide/EditQuantity/QtySubGRN';
 import QtyGRN from '../Pages/UserSide/EditQuantity/QtyGRN';
 import ProfitAnalysis from '../Pages/ProfiltAnalysis';
+import Transactions from '../Pages/Transactions';
 
 const RouterApp = () => {
   return (
@@ -31,6 +32,8 @@ const RouterApp = () => {
         <Route path='/qtygrn/:id' element={<QtyGRN />} />
         <Route path='/qtysubgrn/:id' element={<QtySubGRN />} />
         <Route path='/profitanalysis' element={<ProfitAnalysis />} />
+        <Route path='/transactions' element={<Transactions />} />
+
 
 
       </Routes>
