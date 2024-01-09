@@ -28,6 +28,11 @@ function NavButton() {
                 Shop GRN
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link href="/stock" active={location.pathname === '/stock'}>
+                Reports
+              </Nav.Link>
+            </Nav.Item>
 
             <form className="d-flex justify-content-end mr-5 pr-5">
                 <a href="/login" className="btn text-danger" type="submit">Logout</a>
