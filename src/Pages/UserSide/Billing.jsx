@@ -333,11 +333,10 @@ const Billing = () => {
     } catch (error) {
       console.error("Error generating invoice:", error.message);
     } finally {
-      // reload the page after generating invoice
-      await updateIndex();
+      await updateIndex();1
       billGenerating(false);
       setInvoiceNum(null);
-      window.location.reload();
+      window.location.reload(); // reload the page after generating invoice
     }
   };
   
