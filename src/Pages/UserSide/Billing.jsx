@@ -27,93 +27,95 @@ const Billing = () => {
   const [Checkedby, setCheckedby] = useState("");
   const [Remarks, setRemarks] = useState("");
   const [InvoiceNum, setInvoiceNum] = useState("");
+  const [billGenerating, setBillGenerating] = useState(false);
 
 
-  // get index 
-
-      useEffect(() => {
-        /**
-         * Fetches the GRN (Goods Received Note) data from the server.
-         * @returns {Promise<void>} A promise that resolves when the data is fetched successfully.
-         */
-        const fetchGrn = async () => {
-          try {
-            const res = await fetch(ENDPOINT + "/grn");
-            if (res.ok) {
-              const data = await res.json();
-              setGrn(data);
-            } else {
-              console.error("Request failed with status", res.status);
+       // get index 
+        useEffect(() => {
+          /**
+           * Fetches the GRN (Goods Received Note) data from the server.
+           * @returns {Promise<void>} A promise that resolves when the data is fetched successfully.
+           */
+          const fetchGrn = async () => {
+            try {
+              const res = await fetch(ENDPOINT + "/grn");
+              if (res.ok) {
+                const data = await res.json();
+                setGrn(data);
+              } else {
+                console.error("Request failed with status", res.status);
+              }
+            } catch (error) {
+              console.error("Error making GET request:", error.message);
             }
-          } catch (error) {
-            console.error("Error making GET request:", error.message);
+          };
+
+          fetchGrn();
+        }, []);
+        
+
+        useEffect(() => {
+          if (selectedItem !== "Select") {
+            const selectedItemData = grn.find((item) => item.ItemName === selectedItem);
+            setSelectedItemData(selectedItemData);
+          } else {
+            setSelectedItemData(null);
           }
-        };
+        }, [selectedItem, grn]);
 
-        fetchGrn();
-      }, []);
+
+    // Function to handle fetch errors
+    const handleFetchError = (error, action) => {
+      console.error(`Error ${action}:`, error.message);
+    };
+
+    // Fetch index number when the component mounts
+    useEffect(() => {
+      const action = "fetching index";
       
-
-      useEffect(() => {
-        if (selectedItem !== "Select") {
-          const selectedItemData = grn.find((item) => item.ItemName === selectedItem);
-          setSelectedItemData(selectedItemData);
-        } else {
-          setSelectedItemData(null);
+      const fetchIndex = async () => {
+        try {
+          const response = await fetch(`${ENDPOINT}/index/658b1fb98822444dd9b9d167`);
+          if (response.ok) {
+            const data = await response.json();
+            setInvoiceNum(data.indexnum);
+          } else {
+            console.error(`Failed to fetch index. Server returned status: ${response.status}`);
+          }
+        } catch (error) {
+          handleFetchError(error, action);
         }
-      }, [selectedItem, grn]);
+      };
+
+      // Include fetchIndex in the dependency array
+      fetchIndex();
+
+    }, []); // Empty dependency array to run the effect only once when the component mounts
 
 
-// Function to handle fetch errors
-const handleFetchError = (error, action) => {
-  console.error(`Error ${action}:`, error.message);
-};
 
-// Fetch index number when the component mounts
-useEffect(() => {
-  const action = "fetching index";
-  
-  const fetchIndex = async () => {
-    try {
-      const response = await fetch(`${ENDPOINT}/index/658b1fb98822444dd9b9d167`);
-      if (response.ok) {
-        const data = await response.json();
-        setInvoiceNum(data.indexnum);
-      } else {
-        console.error(`Failed to fetch index. Server returned status: ${response.status}`);
+    // Update index number after generating invoice
+    const updateIndex = async () => {
+      const action = "updating index";
+      try {
+        const response = await fetch(`${ENDPOINT}/index/658b1fb98822444dd9b9d167`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ indexnum: InvoiceNum + 1 }),
+        });
+        if (response.ok) {
+          console.log("Index updated successfully");
+        } else {
+          console.error(`Failed to update index. Server returned status: ${response.status}`);
+        }
+      } catch (error) {
+        handleFetchError(error, action);
+      } finally {
+        window.location.reload();
       }
-    } catch (error) {
-      handleFetchError(error, action);
-    }
-  };
-
-  // Include fetchIndex in the dependency array
-  fetchIndex();
-
-}, []); // Empty dependency array to run the effect only once when the component mounts
-
-// Update index number after generating invoice
-const updateIndex = async () => {
-  const action = "updating index";
-  try {
-    const response = await fetch(`${ENDPOINT}/index/658b1fb98822444dd9b9d167`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ indexnum: InvoiceNum + 1 }),
-    });
-    if (response.ok) {
-      console.log("Index updated successfully");
-    } else {
-      console.error(`Failed to update index. Server returned status: ${response.status}`);
-    }
-  } catch (error) {
-    handleFetchError(error, action);
-  } finally {
-    window.location.reload();
-  }
-};
+    };
 
 
 
@@ -316,18 +318,29 @@ const updateIndex = async () => {
 
     doc.save(`Invoice_${new Date().toLocaleDateString()}_${customerName}.pdf`);
 
-    alert("Invoice generated successfully!");
-
     setInvoiceItems([]);
     setTotalAmount(0);
     setAddedItems([]);
     
-    updateIndex();
 
-
-    // reload the page after generating invoice
-    window.location.reload();
   };
+
+
+  const submit = async () => {
+    try {
+      await generateInvoice();
+      setBillGenerating(true);
+    } catch (error) {
+      console.error("Error generating invoice:", error.message);
+    } finally {
+      // reload the page after generating invoice
+      await updateIndex();
+      billGenerating(false);
+      setInvoiceNum(null);
+      window.location.reload();
+    }
+  };
+  
 
 
   // Return from here
@@ -513,14 +526,23 @@ const updateIndex = async () => {
                 <div className="card-body">
                   <h3 className="card-title">Total Amount</h3>
                   <h5 className="card-text">Rs.{totalAmount+serviceCharge}</h5>
-                  <button className="btn btn-light" onClick={generateInvoice}>
+                  <button className="btn btn-light" onClick={submit}>
                     Generate Invoice
                   </button>
                 </div>
               </div>
             </div>
           </div>
+
+                  {/* loader till bill is generated */}
+                {billGenerating && (
+                  <div className="col-md-12 d-flex justify-content-center align-items-center">
+                      <h4 className="text-center text-danger">Generating Invoice...</h4>
+                  </div>
+                )}
+
         </div>
+
       </div>
     </div>
   );

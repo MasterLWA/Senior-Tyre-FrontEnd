@@ -29,7 +29,7 @@ function NavButton() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link href="/stock" active={location.pathname === '/stock'}>
+              <Nav.Link href="/reports" active={location.pathname === '/reports'}>
                 Reports
               </Nav.Link>
             </Nav.Item>
