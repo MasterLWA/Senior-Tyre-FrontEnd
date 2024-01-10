@@ -47,24 +47,6 @@ const Billing = () => {
               }
             } catch (error) {
               console.error("Error making GET request:", error.message);
-  const [InvoiceNum, setInvoiceNum] = useState("");https://github.com/MasterLWA/Senior-Tyre-FrontEnd/actions
-
-
-  // get index 
-
-      useEffect(() => {
-        /**
-         * Fetches the GRN (Goods Received Note) data from the server.
-         * @returns {Promise<void>} A promise that resolves when the data is fetched successfully.
-         */
-        const fetchGrn = async () => {
-          try {
-            const res = await fetch(ENDPOINT + "/grn");
-            if (res.ok) {
-              const data = await res.json();
-              setGrn(data);
-            } else {
-              console.error("Request failed with status", res.status);
             }
           };
 
@@ -330,7 +312,6 @@ const Billing = () => {
         };
 
         sellItems.push(sellItem);
-        
       }
     }
 
@@ -346,7 +327,6 @@ const Billing = () => {
   };
 
 
-
   const submit = async () => {
     try {
       await generateInvoice();
@@ -360,11 +340,6 @@ const Billing = () => {
       setInvoiceNum(null);
       window.location.reload();
     }
-
-    // reload the page after generating invoice
-    window.location.reload();
-    setInvoiceNum(null)
-
   };
   
 
