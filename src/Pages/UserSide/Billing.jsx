@@ -26,7 +26,7 @@ const Billing = () => {
   const [customerName, setCustomerName] = useState("");
   const [Checkedby, setCheckedby] = useState("");
   const [Remarks, setRemarks] = useState("");
-  const [InvoiceNum, setInvoiceNum] = useState("");
+  const [InvoiceNum, setInvoiceNum] = useState();
   const [billGenerating, setBillGenerating] = useState(false);
 
 
@@ -179,7 +179,8 @@ const Billing = () => {
         throw error;
       }
     };
-
+  
+    // Remove item from invoice
   const removeItemFromInvoice = (indexToRemove) => {
     const removedItem = invoiceItems[indexToRemove];
     const newTotalAmount = totalAmount - removedItem.Amount;
@@ -193,7 +194,7 @@ const Billing = () => {
   };
 
 
-
+// Add sell items to the database
   const addSellItems = async (sellItems) => {
     try {
       const response = await axios.post(`${ENDPOINT}/sell`, sellItems);
