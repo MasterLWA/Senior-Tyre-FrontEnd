@@ -82,11 +82,11 @@ const Reports = () => {
       const worksheet = workbook.addWorksheet("Profit Analysis Report");
 
       // Add header row
-      worksheet.addRow(['Item', 'Unit Cost Price', 'Unit Selling Price', 'Total Selling Items', 'Total Selling Price', 'Profit', 'Day']);
+      worksheet.addRow(['Item', 'Unit Cost Price', 'Unit Selling Price', 'Total Selling Items', 'totalCost', 'Total Selling Price', 'Profit', 'Day']);
 
       // Add data rows
       data.forEach(item => {
-        worksheet.addRow([item.item, item.unitCostPrice, item.unitSellingPrice, item.totalSellingItems, item.totalSellingPrice, item.profit, item.day]);
+        worksheet.addRow([item.item, item.unitCostPrice, item.unitSellingPrice, item.totalSellingItems,(item.unitCostPrice * item.totalSellingItems), item.totalSellingPrice, item.profit, item.day]);
       });
 
       const totalIncome = data.reduce((total, item) => total + item.totalSellingPrice, 0);
