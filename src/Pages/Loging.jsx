@@ -1,18 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ENDPOINT } from "../config";
 
 const Loging = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [userpassword, setUserpassword] = useState("");
+  const [adminpassword, setAdminpassword] = useState("");
   const [error, setError] = useState(null);
+
+      // get user and admin password from the database get call = /sendpasswords when the page loads {
+//     "user": "seniorSL949",
+//     "admin": "L3tM3In2314"
+// }
+      useEffect(() => {
+        fetch(`${ENDPOINT}/sendpasswords`)
+          .then((res) => res.json())
+          .then((data) => {
+            setUserpassword(data.user);
+            setAdminpassword(data.admin);
+          })
+          .catch((err) => console.log(err));
+      }
+      , []);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Check username and password
-    if (username === "user" && password === "userpassword") {
+    if (username === "user" && password === userpassword) {
       // Redirect to the billing page for regular users
       window.location.href = '/billing';
-    } else if (username === "admin" && password === "adminpassword") {
+    } else if (username === "admin" && password === adminpassword) {
       // Redirect to the admin dashboard for admins
       window.location.href = '/dashboard';
     } else {
