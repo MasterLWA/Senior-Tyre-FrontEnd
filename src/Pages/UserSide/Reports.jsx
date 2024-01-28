@@ -11,11 +11,16 @@ const Reports = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
+
   // generatePDFReport function
   const generatePDFReport = async () => {
     try {
       const response = await axios.get(`${ENDPOINT}/getbytime/${fromDate}/${toDate}`);
       const data = response.data;
+
+      // get /grn data from the database and calculate unitCostPrice * Quantity for each item and add them to totalinWarehouse and totalinShop
+      const response2 = await axios.get(`${ENDPOINT}/grn`);
+      const data2 = response2.data;
 
       const doc = new jsPDF();
       doc.text(`Profit Analysis Report (${fromDate} to ${toDate})`, 15, 15);
@@ -43,13 +48,19 @@ const Reports = () => {
       const profit = data.reduce((total, item) => total + item.profit, 0);
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
 
+      // get /grn data from the database and calculate CostPrice * Quantity for each item and add them to totalinWarehouse and totalinShop
+      const totalinWarehouse = data2.reduce((total, item) => total + item.Quantity * item.CostPrice, 0);
+      const totalinShop = data2.reduce((total, item) => total + (Number(item.subGRNQuantity) || 0) * (Number(item.CostPrice) || 0), 0);
+
       
       doc.text(`Total Income      : Rs.${totalIncome}`, 15, doc.autoTable.previous.finalY + 15);
       doc.text(`Total Cost        : Rs.${totalCost}`, 15, doc.autoTable.previous.finalY + 25);
       doc.text(`Total Profit      : Rs.${profit}`, 15, doc.autoTable.previous.finalY + 35); 
+      doc.text(`Total in Warehouse: Rs.${totalinWarehouse}`, 15, doc.autoTable.previous.finalY + 45);
+      doc.text(`Total in Shop     : Rs.${totalinShop}`, 15, doc.autoTable.previous.finalY + 55);
 
-
-      // bottom of the page, center  shows powered by Lakindu
+      
+      // bottom of the page, center  shows powered by LWA Technologies after the table 
       doc.setFontSize(10);
       doc.setTextColor(100);
       doc.text(
@@ -58,6 +69,7 @@ const Reports = () => {
         doc.internal.pageSize.getHeight() - 10,
         { align: "center" }
       );
+
 
       
 
@@ -78,6 +90,11 @@ const Reports = () => {
       const response = await axios.get(`${ENDPOINT}/getbytime/${fromDate}/${toDate}`);
       const data = response.data;
 
+      // get /grn data from the database and calculate unitCostPrice * Quantity for each item and add them to totalinWarehouse and totalinShop
+      const response2 = await axios.get(`${ENDPOINT}/grn`);
+      const data2 = response2.data;
+
+
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Profit Analysis Report");
 
@@ -93,6 +110,11 @@ const Reports = () => {
       const profit = data.reduce((total, item) => total + item.profit, 0);
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
       const totalSellingItems = data.reduce((total, item) => total + item.totalSellingItems, 0);
+
+            // get /grn data from the database and calculate CostPrice * Quantity for each item and add them to totalinWarehouse and totalinShop
+            const totalinWarehouse = data2.reduce((total, item) => total + item.Quantity * item.CostPrice, 0);
+            const totalinShop = data2.reduce((total, item) => total + (Number(item.subGRNQuantity) || 0) * (Number(item.CostPrice) || 0), 0);
+      
   
 
 
@@ -102,7 +124,8 @@ const Reports = () => {
       worksheet.addRow(['Total Cost', totalCost]);
       worksheet.addRow(['Total Profit', profit]);
       worksheet.addRow(['Total Selling Items', totalSellingItems]);
-
+      worksheet.addRow(['Total in Warehouse', totalinWarehouse]);
+      worksheet.addRow(['Total in Shop', totalinShop]);
 
 
       // Generate buffer and save
@@ -143,6 +166,8 @@ const stockAnalysisExcel = async () => {
     console.error("Error generating Excel report:", error.message);
   }
 };
+
+
 
 
   return (
