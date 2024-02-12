@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ENDPOINT } from "../config";
 import DashboardNavbar from "../Components/DashboardNavbar";
 
@@ -15,18 +15,34 @@ const Transactions = () => {
   }, [date]);
 
 
-  const deleteTransaction = async (id) => {
+  const updatesubGRNQuantitybyName = async (itemName, newQuantity) => {
+    try {
+      const response = await fetch(`${ENDPOINT}/grnbyname/${itemName}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ valueToAdd: newQuantity }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update subGRNQuantity");
+      }
+    } catch (err) {
+      console.error("Error updating subGRNQuantity:", err.message);
+    }
+  };
+
+  const deleteTransaction = async (id, itemName, quantity) => {
     try {
       const response = await fetch(`${ENDPOINT}/deletesell/${id}`, {
         method: "DELETE",
       });
-  
+      
       if (response.ok) {
-        // Optional: Handle successful response data if needed
-        // const data = await response.json();
         window.alert("Deleted successfully!");
+        updatesubGRNQuantitybyName(itemName, quantity);
       } else {
-        // Handle other HTTP response status codes (e.g., 404 Not Found)
         console.log("Failed to delete transaction! Server returned an error.");
         window.alert("Failed to delete transaction!");
       }
@@ -38,7 +54,6 @@ const Transactions = () => {
     }
   };
 
-  
   return (
     <div>
       <DashboardNavbar />
@@ -64,10 +79,11 @@ const Transactions = () => {
                 <td>{transaction.profit}</td>
                 <td>{transaction.unitSellingPrice}</td>
                 <td>
-                <button
+                  <button
                     className="btn btn-danger"
-                    onClick={() => deleteTransaction(transaction._id)}
-                  > Delete </button>
+                    onClick={() => deleteTransaction(transaction._id, transaction.item, transaction.totalSellingItems)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
