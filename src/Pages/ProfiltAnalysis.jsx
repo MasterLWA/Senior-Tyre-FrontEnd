@@ -105,6 +105,7 @@ const ProfitAnalysis = () => {
         worksheet.addRow([item.item, item.unitCostPrice, item.unitSellingPrice, item.totalSellingItems,(item.unitCostPrice * item.totalSellingItems), item.totalSellingPrice, item.profit, item.day]);
       });
 
+
       const totalIncome = data.reduce((total, item) => total + item.totalSellingPrice, 0);
       const profit = data.reduce((total, item) => total + item.profit, 0);
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
@@ -148,11 +149,11 @@ const stockAnalysisExcel = async () => {
     const worksheet = workbook.addWorksheet("Stock Analysis Report");
 
     // Add header row
-    worksheet.addRow(['Item', 'Ware House Quantity', 'Shop Quantity']);
+    worksheet.addRow(['Item', 'Ware House Quantity', 'Shop Quantity', 'Cost Price']);
 
     // Add data rows
     data.forEach(item => {
-      worksheet.addRow([item.ItemName, item.Quantity, item.subGRNQuantity]);
+      worksheet.addRow([item.ItemName, item.Quantity, item.subGRNQuantity, item.CostPrice]);
     });
 
     // Generate buffer and save

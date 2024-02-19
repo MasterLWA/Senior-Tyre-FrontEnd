@@ -106,6 +106,7 @@ const Reports = () => {
         worksheet.addRow([item.item, item.unitCostPrice, item.unitSellingPrice, item.totalSellingItems,(item.unitCostPrice * item.totalSellingItems), item.totalSellingPrice, item.profit, item.day]);
       });
 
+
       const totalIncome = data.reduce((total, item) => total + item.totalSellingPrice, 0);
       const profit = data.reduce((total, item) => total + item.profit, 0);
       const totalCost = data.reduce((total, item) => total + item.unitCostPrice * item.totalSellingItems, 0);
